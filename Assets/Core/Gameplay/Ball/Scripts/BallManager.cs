@@ -3,27 +3,16 @@ using UnityEngine;
 
 namespace Core.Balls
 {
-
     public class BallManager : MonoBehaviour
     {
         public static BallManager Instance;
+        private int _specialBallCounter = 0;
 
-        private List<Ball> allBalls = new List<Ball>();
+        private void Awake() => Instance = this;
 
-        private void Awake()
+        private void Update()
         {
-            Instance = this;
-        }
-
-        public void RegisterBall(Ball ball)
-        {
-            if (!allBalls.Contains(ball))
-                allBalls.Add(ball);
-        }
-
-        void Update()
-        {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0)) // Detect left mouse click
             {
                 DetectClickedBall();
             }
@@ -51,23 +40,31 @@ namespace Core.Balls
 
             if (matchedBalls.Count >= 3)
             {
-                BallPool.Instance.DestroyBalls(matchedBalls.ToArray());
-                foreach (Ball ball in matchedBalls)
+                BallPool.Instance.DestroyBalls(matchedBalls);
+                _specialBallCounter += matchedBalls.Count;
+
+                if (_specialBallCounter >= 10)
                 {
-                    ball.MarkAsMatched();
-                    allBalls.Remove(ball);
+                    SpawnSpecialBall();
+                    _specialBallCounter = 0;
                 }
+            }
+            else
+            {
+                //GameManager.Instance.ShowMissText(clickedBall.transform.position);
             }
         }
 
         private void FindConnectedBalls(Ball ball, List<Ball> matchedBalls)
         {
+            List<Ball> allBalls = BallPool.Instance.GetActiveBalls(); // Ask Pool for active balls
+
             foreach (Ball otherBall in allBalls)
             {
                 if (!matchedBalls.Contains(otherBall) && otherBall.BallType == ball.BallType)
                 {
                     float distance = Vector2.Distance(ball.transform.position, otherBall.transform.position);
-                    if (distance < 1.05f) // Adjust based on your ball size
+                    if (distance < 1.05f)
                     {
                         matchedBalls.Add(otherBall);
                         FindConnectedBalls(otherBall, matchedBalls);
@@ -75,6 +72,11 @@ namespace Core.Balls
                 }
             }
         }
-    }
 
+        private void SpawnSpecialBall()
+        {
+            //Ball specialBall = BallPool.Instance.SpawnBall();
+            //specialBall.SetType(SpecialBallData.Instance);
+        }
+    }
 }
