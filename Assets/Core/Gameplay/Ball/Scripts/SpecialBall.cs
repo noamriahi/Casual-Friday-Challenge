@@ -1,18 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class SpecialBall : MonoBehaviour
+namespace Core.Balls
 {
-    // Start is called before the first frame update
-    void Start()
+    public class SpecialBall : Ball
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
