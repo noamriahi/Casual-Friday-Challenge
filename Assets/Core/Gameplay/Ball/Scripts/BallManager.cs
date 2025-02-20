@@ -12,7 +12,7 @@ namespace Core.Balls
 
         private void Update()
         {
-            if (Input.GetMouseButtonDown(0)) // Detect left mouse click
+            if (Input.GetMouseButtonDown(0))
             {
                 DetectClickedBall();
             }
@@ -78,5 +78,12 @@ namespace Core.Balls
             //Ball specialBall = BallPool.Instance.SpawnBall();
             //specialBall.SetType(SpecialBallData.Instance);
         }
+    }
+    public enum BallType
+    {
+        Red,
+        Blue,
+        Purple,
+        Yellow
     }
 }
