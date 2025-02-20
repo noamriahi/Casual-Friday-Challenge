@@ -1,18 +1,41 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
-public class BaseCommand : MonoBehaviour
+namespace Core
 {
-    // Start is called before the first frame update
-    void Start()
+    public abstract class BaseCommand
     {
-        
+        bool _isExecuted;
+        public void Execute()
+        {
+            if (_isExecuted)
+            {
+                Debug.LogError($"Command {this.GetType()}, was already executed");
+                return;
+            }
+
+            _isExecuted = true;
+            try
+            {
+                InternalExecute();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                OnCommandFailed();
+            }
+        }
+
+        protected abstract void InternalExecute();
+
+        protected virtual void OnCommandFailed()
+        {
+        }
+
+        protected virtual void ResetCommand()
+        {
+
+        }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

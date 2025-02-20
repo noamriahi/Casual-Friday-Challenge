@@ -1,3 +1,4 @@
+using Features.Score;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -41,6 +42,8 @@ namespace Core.Balls
             if (matchedBalls.Count >= 3)
             {
                 BallPool.Instance.DestroyBalls(matchedBalls);
+                new UpdateScoreCommand(matchedBalls.Count * 10).Execute();
+
                 _specialBallCounter += matchedBalls.Count;
 
                 if (_specialBallCounter >= 10)
