@@ -1,4 +1,4 @@
-using Features.Score;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,14 +6,48 @@ namespace Core.Balls
 {
     public class BallManager : MonoBehaviour
     {
+        [Header("Balls")]
+        [SerializeField] Transform _ballSpawnPoint;
+        [SerializeField] float _spawnDelay = 0.05f;
+        [SerializeField] int _ballAmount = 60;
+
+        bool _isInGame = false;
+
         public static BallManager Instance;
-        private int _specialBallCounter = 0;
+
+        List<Ball> _ballOnBoard = new List<Ball>();
 
         private void Awake() => Instance = this;
 
+        private void Start()
+        {
+            Ball.OnDestroyBalls += OnDestroyBallHandler;
+            GameEvents.OnGameStart += OnStartGame;
+            GameEvents.OnGameEnd += OnEndGame;
+        }
+        void OnStartGame()
+        {
+            BallPool.Instance.DestroyBalls(_ballOnBoard.ToArray());
+            StartCoroutine(SpawnBalls(_ballAmount));
+            _isInGame = true;
+        }
+        void OnEndGame()
+        {
+            _isInGame = false;
+        }
+        IEnumerator SpawnBalls(int ballAmount)
+        {
+            for (int i = 0; i < ballAmount; i++)
+            {
+                var ball = BallPool.Instance.CreateRegularBall(_ballSpawnPoint.position);
+                _ballOnBoard.Add(ball);
+                yield return new WaitForSeconds(_spawnDelay);
+            }
+        }
+
         private void Update()
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && _isInGame)
             {
                 DetectClickedBall();
             }
@@ -29,42 +63,40 @@ namespace Core.Balls
                 Ball clickedBall = hit.collider.GetComponent<Ball>();
                 if (clickedBall != null)
                 {
-                    CheckMatch(clickedBall);
+                    clickedBall.ExploseBalls();
                 }
             }
         }
+        void OnDestroyBallHandler(List<Ball> ballToDestroy, Vector3 clickedBallPosition)
+        {
+            if (!_isInGame) return;
+            int ballAmount = ballToDestroy.Count;
+            if(ballAmount > 10)
+            {
+                var specialBall = BallPool.Instance.SpawnSpecialBall(clickedBallPosition);
+                _ballOnBoard.Add(specialBall);
+            }
+            foreach(Ball ball in ballToDestroy)
+            {
+                _ballOnBoard.Remove(ball);
+            }
+            StartCoroutine(SpawnBalls(ballAmount));
 
-        public void CheckMatch(Ball clickedBall)
+            if (TapManager.Instance.IsGameOver())
+            {
+                GameEvents.OnGameEnd?.Invoke();
+            }
+        }
+        public List<Ball> FindConnectedBalls(Ball clickedBall)
         {
             List<Ball> matchedBalls = new List<Ball> { clickedBall };
-            FindConnectedBalls(clickedBall, matchedBalls);
-
-            if (matchedBalls.Count >= 3)
-            {
-                BallPool.Instance.DestroyBalls(matchedBalls);
-                var factor = GetScoreCalculateFactor(matchedBalls.Count);
-                new UpdateScoreCommand(matchedBalls.Count * factor).Execute();
-
-                _specialBallCounter += matchedBalls.Count;
-
-                if (_specialBallCounter >= 10)
-                {
-                    SpawnSpecialBall();
-                    _specialBallCounter = 0;
-                }
-                TapManager.Instance.TapBall();
-            }
-            else
-            {
-                //GameManager.Instance.ShowMissText(clickedBall.transform.position);
-            }
+            RecursiveFind(clickedBall, matchedBalls);
+            return matchedBalls;
         }
 
-        private void FindConnectedBalls(Ball ball, List<Ball> matchedBalls)
+        private void RecursiveFind(Ball ball, List<Ball> matchedBalls)
         {
-            List<Ball> allBalls = BallPool.Instance.GetActiveBalls(); // Ask Pool for active balls
-
-            foreach (Ball otherBall in allBalls)
+            foreach (Ball otherBall in _ballOnBoard)
             {
                 if (!matchedBalls.Contains(otherBall) && otherBall.BallType == ball.BallType)
                 {
@@ -72,31 +104,42 @@ namespace Core.Balls
                     if (distance < 1.2f)
                     {
                         matchedBalls.Add(otherBall);
-                        FindConnectedBalls(otherBall, matchedBalls);
+                        RecursiveFind(otherBall, matchedBalls);
                     }
                 }
             }
         }
-
-        private void SpawnSpecialBall()
+        public void GetBallAtRadius(List<Ball> matchedBalls, Ball ball, float radius)
         {
-            //Ball specialBall = BallPool.Instance.SpawnBall();
-            //specialBall.SetType(SpecialBallData.Instance);
+            foreach (Ball otherBall in _ballOnBoard)
+            {
+                float distance = Vector2.Distance(ball.transform.position, otherBall.transform.position);
+                if (distance < radius)
+                {
+                    matchedBalls.Add(otherBall);
+                }
+            }
         }
-        private static int GetScoreCalculateFactor(int ballAmount)
+
+        public static int GetScoreCalculateFactor(int ballAmount)
         {
-            if (ballAmount <= 10)
-                return 1;
-            if (ballAmount <= 20)
-                return 2;
+            if (ballAmount <= 10) return 1;
+            if (ballAmount <= 20) return 2;
             return 4;
         }
+        private void OnDestroy()
+        {
+            Instance = null;
+
+            Ball.OnDestroyBalls -= OnDestroyBallHandler;
+            GameEvents.OnGameStart -= OnStartGame;
+        }
     }
-    public enum BallType
-    {
-        Red,
-        Blue,
-        Purple,
-        Yellow
-    }
+}
+public enum BallType
+{
+    Red,
+    Blue,
+    Purple,
+    Yellow
 }

@@ -1,80 +1,100 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Core.Balls
 {
-    public class BallPool : MonoBehaviour
+    public class BallPool : Singleton<BallPool>
     {
-        [Header("Spawn Configs")]
-        [SerializeField] private Ball _ballPrefab;
+        [Header("Regualr Balls")]
+        [SerializeField] private RegularBall _regularBallPrefab;
         [SerializeField] private Transform _ballParent;
-        [SerializeField] private Transform _spawnPoint;
-        [SerializeField] private int _maxBalls = 60;
-        [SerializeField] private float _spawnDelay = 0.1f;
-        [SerializeField] private List<BallConfigSO> _ballTypes; 
+        [SerializeField] private int _amountToPool = 60;
+        [SerializeField] private List<BallConfigSO> _ballTypes;
 
-        private Queue<Ball> _inactiveBalls = new Queue<Ball>();
-        private List<Ball> _activeBalls = new List<Ball>();
+        [Header("Special Balls")]
+        [SerializeField] private SpecialBall _specialBallPrefab;
+        [SerializeField] private int _amountOfSpecialToPool = 5;
 
-        public static BallPool Instance;
-        private void Awake() => Instance = this;
+        Queue<RegularBall> _ballQueue = new Queue<RegularBall>();
+        Queue<SpecialBall> _specialsBallQueue = new Queue<SpecialBall>();
+
 
         private void Start()
         {
-            StartCoroutine(SpawnBallsCoroutine());
-        }
-
-        private IEnumerator SpawnBallsCoroutine()
-        {
-            while (_activeBalls.Count < _maxBalls)
+            for (int i = 0; i < _amountToPool; i++)
             {
-                SpawnBall();
-                yield return new WaitForSeconds(_spawnDelay);
+                var newBall = Instantiate(_regularBallPrefab, _ballParent);
+                newBall.gameObject.SetActive(false);
+                _ballQueue.Enqueue(newBall);
+            }
+            for (int i = 0; i < _amountOfSpecialToPool; i++)
+            {
+                var newBall = Instantiate(_specialBallPrefab, _ballParent);
+                newBall.gameObject.SetActive(false);
+                _specialsBallQueue.Enqueue(newBall);
             }
         }
 
-        public Ball SpawnBall()
-        {
-            Ball newBall;
-            if (_inactiveBalls.Count > 0)
-            {
-                newBall = _inactiveBalls.Dequeue();
-                newBall.gameObject.SetActive(true);
-            }
-            else
-            {
-                newBall = Instantiate(_ballPrefab, _spawnPoint.position, Quaternion.identity, _ballParent);
-            }
 
+        public RegularBall CreateRegularBall(Vector3 position)
+        {
+            RegularBall newBall = GetOrCreateBall();
             AssignRandomType(newBall);
-            _activeBalls.Add(newBall);
+            newBall.transform.position = position;
             return newBall;
         }
 
-        public void DestroyBalls(List<Ball> matchedBalls)
+        public SpecialBall SpawnSpecialBall(Vector3 position)
         {
-            foreach (var ball in matchedBalls)
-            {
-                ball.transform.position = _spawnPoint.position;
-                ball.MarkAsMatched();
-                ball.gameObject.SetActive(false);
-                _activeBalls.Remove(ball);
-                _inactiveBalls.Enqueue(ball);
-            }
-
-            StartCoroutine(SpawnBallsCoroutine()); // Refill balls
-        }
-
-        public List<Ball> GetActiveBalls()
-        {
-            return _activeBalls;
+            SpecialBall specialBall = GetOrCreateSpecialBall();
+            specialBall.transform.position = position;
+            return specialBall;
         }
 
         private void AssignRandomType(Ball ball)
         {
             BallConfigSO data = _ballTypes[Random.Range(0, _ballTypes.Count)];
             ball.SetType(data);
+        }
+        private RegularBall GetOrCreateBall()
+        {
+            if(_ballQueue == null || _ballQueue.Count == 0)
+            {
+                var newBall = Instantiate(_regularBallPrefab, _ballParent);
+                newBall.gameObject.SetActive(true);
+                return newBall;
+            }
+            var ball = _ballQueue.Dequeue();
+            ball.gameObject.SetActive(true);
+            return ball;
+        }        
+        private SpecialBall GetOrCreateSpecialBall()
+        {
+            if (_specialsBallQueue == null || _specialsBallQueue.Count == 0)
+            {
+                var newBall = Instantiate(_specialBallPrefab, _ballParent);
+                newBall.gameObject.SetActive(true);
+                return newBall;
+            }
+            var ball = _specialsBallQueue.Dequeue();
+            ball.gameObject.SetActive(true);
+            return ball;
+        }
+
+        public void DestroyBalls(params Ball[] balls)
+        {
+            foreach (var ball in balls)
+            {
+                ball.gameObject.SetActive(false);
+                if(ball is SpecialBall specialBall)
+                {
+                    _specialsBallQueue.Enqueue(specialBall);
+                }
+                else
+                {
+                    _ballQueue.Enqueue((RegularBall)ball);
+                }
+            }
         }
     }
 }

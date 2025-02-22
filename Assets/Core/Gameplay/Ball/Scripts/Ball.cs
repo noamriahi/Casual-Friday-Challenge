@@ -1,4 +1,5 @@
-using Cysharp.Threading.Tasks;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,28 +9,28 @@ namespace Core.Balls
     {
         [SerializeField] ParticleSystem _exploseEffect;
         [SerializeField] SpriteRenderer _spriteRenderer;
+
         public BallConfigSO BallType { get; private set; }
-        private bool _isMatched = false;
+        public static Action<List<Ball>, Vector3> OnDestroyBalls;
+        
         public void SetType(BallConfigSO data)
         {
             _spriteRenderer.enabled = true;
-
             BallType = data;
             _spriteRenderer.sprite = data.Sprite;
         }
-
-        public async UniTask MarkAsMatched()
+        public void DestroyBall()
         {
-            if (_isMatched) return;
-            _isMatched = true;
-            await DestroyBall();
-            //BallPool.Instance.DestroyBalls(new List<Ball> { this });
+            StartCoroutine(DestroyBallProcess());
         }
-        async UniTask DestroyBall()
+        IEnumerator DestroyBallProcess()
         {
             _spriteRenderer.enabled = false;
             _exploseEffect.Play();
-            await UniTask.WaitForSeconds(1f);
+            yield return new WaitForSeconds(0.5f);
+            BallPool.Instance.DestroyBalls(this);
+
+            _spriteRenderer.enabled = true;
         }
         public abstract void ExploseBalls();
 

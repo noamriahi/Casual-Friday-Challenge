@@ -13,10 +13,14 @@ public class ScoreManager : Singleton<ScoreManager>
     public override void Initialize()
     {
         base.Initialize();
-        SaveScore();
+        GameEvents.OnGameStart += OnGameStart;
+        GameEvents.OnGameEnd += SaveScore;
+    }
+    void OnGameStart()
+    {
+        Score = 0;
         OnScoreUpdate?.Invoke(Score);
     }
-
     public void AddPoints(int points)
     {
         Score += points;
@@ -29,5 +33,11 @@ public class ScoreManager : Singleton<ScoreManager>
         {
             Score.SaveData(SCORE_KEY);
         }
+    }
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        GameEvents.OnGameStart -= OnGameStart;
+        GameEvents.OnGameEnd -= SaveScore;
     }
 }

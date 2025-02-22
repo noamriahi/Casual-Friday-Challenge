@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// The GameManager will control the game state
@@ -11,7 +12,7 @@ public class GameManager : MonoBehaviour
     {
         ScoreManager.Instance.Initialize();
         TapManager.Instance.Initialize();
-        TapManager.OnTapOverEvent += OnGameOver;
+        GameEvents.OnGameEnd += OnGameOver;
         await StartGame();
     }
     async UniTask StartGame()
@@ -20,14 +21,23 @@ public class GameManager : MonoBehaviour
         await UniTask.WaitForSeconds(2f);
         _gamePlayUI.ToggleStartGamePopup(false);
 
+        GameEvents.OnGameStart.Invoke();
     }
     void OnGameOver()
     {
-        ScoreManager.Instance.SaveScore();
         _gamePlayUI.ToggleEndGamePopup(true);
 
     }
     private void OnDestroy()
     {
+        GameEvents.OnGameEnd -= OnGameOver;
+    }
+    public static void ReturnToLobby()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
+    public static void RestartGame()
+    {
+        GameEvents.OnGameStart?.Invoke();
     }
 }

@@ -6,6 +6,7 @@ public class GameplayUI : MonoBehaviour
     [Header("Top UI Texts")]
     [SerializeField] TMP_Text _scoreText;
     [SerializeField] TMP_Text _tapText;
+    [SerializeField] TMP_Text _timerText;
     [Header("Game Manager")]
     [SerializeField] GameObject _startGamePopup;
     [SerializeField] GameObject _endGamePopup;

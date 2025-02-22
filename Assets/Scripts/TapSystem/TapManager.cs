@@ -1,24 +1,37 @@
 using System;
+using UnityEngine;
 
 public class TapManager : Singleton<TapManager>
 {
-    public static Action OnTapOverEvent;
-    public static Action<int> OnTapUpdateEvent;
+    [SerializeField] int _maxTapAmount = 5;
 
-    public int TapAmount = 5;
+    public static Action<int> OnTapUpdateEvent;
+    int _currentTapAmount = 0;
+    
 
     public override void Initialize()
     {
         base.Initialize();
-        OnTapUpdateEvent?.Invoke(Instance.TapAmount);
+        GameEvents.OnGameStart += OnGameStart;
+    }
+    void OnGameStart()
+    {
+        _currentTapAmount = _maxTapAmount;
+        OnTapUpdateEvent?.Invoke(Instance._currentTapAmount);
     }
     public void TapBall()
     {
-        TapAmount--;
-        OnTapUpdateEvent?.Invoke(TapAmount);
-        if (TapAmount <= 0)
-        {
-            OnTapOverEvent?.Invoke();
-        }
+        _currentTapAmount--;
+        OnTapUpdateEvent?.Invoke(_currentTapAmount);
+    }
+    public bool IsGameOver()
+    {
+        return _currentTapAmount <= 0;
+    }
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        GameEvents.OnGameStart -= OnGameStart;
+
     }
 }

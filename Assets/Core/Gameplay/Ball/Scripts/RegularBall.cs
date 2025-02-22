@@ -1,14 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
+using Features.Score;
 namespace Core.Balls
 {
     public class RegularBall : Ball
     {
         public override void ExploseBalls()
         {
-            throw new System.NotImplementedException();
+            var connectedBalls = BallManager.Instance.FindConnectedBalls(this);
+
+            if (connectedBalls.Count >= 3)
+            {
+                TapManager.Instance.TapBall();
+                var factor = BallManager.GetScoreCalculateFactor(connectedBalls.Count);
+                new UpdateScoreCommand(connectedBalls.Count * factor).Execute();
+
+                foreach (var ball in connectedBalls)
+                {
+                    ball.DestroyBall();
+                }
+                OnDestroyBalls?.Invoke(connectedBalls,transform.position);
+            }
         }
     }
 }
