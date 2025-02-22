@@ -8,9 +8,10 @@ public class GameplayUI : MonoBehaviour
     [SerializeField] TMP_Text _tapText;
     [Header("Game Manager")]
     [SerializeField] GameObject _startGamePopup;
+    [SerializeField] GameObject _endGamePopup;
 
 
-    void Start()
+    void Awake()
     {
         ScoreManager.OnScoreUpdate += OnScoreUpdateHandle;
         TapManager.OnTapUpdateEvent += OnTapUpdateHandle;
@@ -19,6 +20,10 @@ public class GameplayUI : MonoBehaviour
     public void ToggleStartGamePopup(bool state)
     {
         _startGamePopup.SetActive(state);
+    }
+    public void ToggleEndGamePopup(bool state)
+    {
+        _endGamePopup.SetActive(state);
     }
     void OnScoreUpdateHandle(int score)
     {

@@ -42,7 +42,8 @@ namespace Core.Balls
             if (matchedBalls.Count >= 3)
             {
                 BallPool.Instance.DestroyBalls(matchedBalls);
-                new UpdateScoreCommand(matchedBalls.Count * 10).Execute();
+                var factor = GetScoreCalculateFactor(matchedBalls.Count);
+                new UpdateScoreCommand(matchedBalls.Count * factor).Execute();
 
                 _specialBallCounter += matchedBalls.Count;
 
@@ -68,7 +69,7 @@ namespace Core.Balls
                 if (!matchedBalls.Contains(otherBall) && otherBall.BallType == ball.BallType)
                 {
                     float distance = Vector2.Distance(ball.transform.position, otherBall.transform.position);
-                    if (distance < 1.05f)
+                    if (distance < 1.2f)
                     {
                         matchedBalls.Add(otherBall);
                         FindConnectedBalls(otherBall, matchedBalls);
@@ -81,6 +82,14 @@ namespace Core.Balls
         {
             //Ball specialBall = BallPool.Instance.SpawnBall();
             //specialBall.SetType(SpecialBallData.Instance);
+        }
+        private static int GetScoreCalculateFactor(int ballAmount)
+        {
+            if (ballAmount <= 10)
+                return 1;
+            if (ballAmount <= 20)
+                return 2;
+            return 4;
         }
     }
     public enum BallType

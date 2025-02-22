@@ -57,6 +57,7 @@ namespace Core.Balls
             foreach (var ball in matchedBalls)
             {
                 ball.transform.position = _spawnPoint.position;
+                ball.MarkAsMatched();
                 ball.gameObject.SetActive(false);
                 _activeBalls.Remove(ball);
                 _inactiveBalls.Enqueue(ball);

@@ -1,5 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
+using System.Threading.Tasks;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -8,15 +9,24 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] GameplayUI _gamePlayUI;
-    private void Start()
+    async void Start()
     {
         ScoreManager.Instance.Initialize();
         TapManager.Instance.Initialize();
-        StartGame();
+        TapManager.OnTapOverEvent += OnGameOver;
+        await StartGame();
     }
-    void StartGame()
+    async UniTask StartGame()
     {
         _gamePlayUI.ToggleStartGamePopup(true);
+        await UniTask.WaitForSeconds(2f);
+        _gamePlayUI.ToggleStartGamePopup(false);
+
+    }
+    void OnGameOver()
+    {
+        _gamePlayUI.ToggleEndGamePopup(true);
+
     }
     private void OnDestroy()
     {
