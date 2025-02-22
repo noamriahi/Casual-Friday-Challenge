@@ -1,6 +1,4 @@
 using Cysharp.Threading.Tasks;
-using System.Threading.Tasks;
-using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -25,6 +23,7 @@ public class GameManager : MonoBehaviour
     }
     void OnGameOver()
     {
+        ScoreManager.Instance.SaveScore();
         _gamePlayUI.ToggleEndGamePopup(true);
 
     }
