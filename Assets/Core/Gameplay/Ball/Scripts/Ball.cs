@@ -10,6 +10,8 @@ namespace Core.Balls
         [SerializeField] ParticleSystem _exploseEffect;
         [SerializeField] SpriteRenderer _spriteRenderer;
 
+        public static Action OnPressNoEnoughBalls;
+
         public BallConfigSO BallType { get; private set; }
         public static Action<List<Ball>, Vector3> OnDestroyBalls;
         

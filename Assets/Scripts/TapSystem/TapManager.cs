@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class TapManager : Singleton<TapManager>
 {
-    [SerializeField] int _maxTapAmount = 5;
+    [SerializeField] int _maxTapAmount = 20;
 
     public static Action<int> OnTapUpdateEvent;
     int _currentTapAmount = 0;

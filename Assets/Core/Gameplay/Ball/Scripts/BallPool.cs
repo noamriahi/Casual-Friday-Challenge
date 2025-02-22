@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace Core.Balls
 {
+    /// <summary>
+    /// The ball pool manager a pool of balls(regular and special) to avoid too much work of the GC.
+    /// </summary>
     public class BallPool : Singleton<BallPool>
     {
         [Header("Regualr Balls")]

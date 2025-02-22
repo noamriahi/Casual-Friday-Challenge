@@ -8,14 +8,14 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] GameplayUI _gamePlayUI;
-    async void Start()
+    void Start()
     {
         ScoreManager.Instance.Initialize();
         TapManager.Instance.Initialize();
         GameEvents.OnGameEnd += OnGameOver;
-        await StartGame();
+        StartGame();
     }
-    async UniTask StartGame()
+    async void StartGame()
     {
         _gamePlayUI.ToggleStartGamePopup(true);
         await UniTask.WaitForSeconds(2f);

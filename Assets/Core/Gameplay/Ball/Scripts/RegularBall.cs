@@ -19,6 +19,10 @@ namespace Core.Balls
                 }
                 OnDestroyBalls?.Invoke(connectedBalls,transform.position);
             }
+            else
+            {
+                OnPressNoEnoughBalls?.Invoke();
+            }
         }
     }
 }

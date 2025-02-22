@@ -6,6 +6,7 @@ using System;
 public class ScoreManager : Singleton<ScoreManager>
 {
     public int Score { get; private set; } = 0;
+    int _targetScore = 400;
 
     public static Action<int> OnScoreUpdate;
     const string SCORE_KEY = "ScoreKey";
@@ -33,6 +34,14 @@ public class ScoreManager : Singleton<ScoreManager>
         {
             Score.SaveData(SCORE_KEY);
         }
+    }
+    public int GetTargetScore()
+    {
+        return _targetScore;
+    }
+    public bool HaveWin()
+    {
+        return Score > _targetScore;
     }
     protected override void OnDestroy()
     {
