@@ -51,6 +51,7 @@ namespace Core.Balls
                     SpawnSpecialBall();
                     _specialBallCounter = 0;
                 }
+                TapManager.Instance.TapBall();
             }
             else
             {

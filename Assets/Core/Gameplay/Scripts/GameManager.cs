@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         ScoreManager.Instance.Initialize();
+        TapManager.Instance.Initialize();
         StartGame();
     }
     void StartGame()

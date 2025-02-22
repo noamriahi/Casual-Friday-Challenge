@@ -1,6 +1,10 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
 namespace Core.Balls
 {
-    public class SpecialBall : Ball
+    public class RegularBall : Ball
     {
         public override void ExploseBalls()
         {
