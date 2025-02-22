@@ -19,7 +19,7 @@ namespace Features.Score
                 Debug.LogError($"{_commandName} - The score amount is smallest the zero!");
                 return;
             }
-            //ScoreManager.AddPointsToScore(_score);
+            ScoreManager.Instance.AddPoints(_score);
         }
     }
 }

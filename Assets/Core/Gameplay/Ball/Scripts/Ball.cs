@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Core.Balls
 {
-    public class Ball : MonoBehaviour
+    public abstract class Ball : MonoBehaviour
     {
         public BallConfigSO BallType { get; private set; }
         private bool _isMatched = false;
@@ -20,5 +20,7 @@ namespace Core.Balls
             _isMatched = true;
             BallPool.Instance.DestroyBalls(new List<Ball> { this });
         }
+        public abstract void ExploseBalls();
+
     }
 }

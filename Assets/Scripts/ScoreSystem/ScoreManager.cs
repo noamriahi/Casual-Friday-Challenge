@@ -3,15 +3,18 @@ using System;
 /// <summary>
 /// The ScoreManager will manager the score of each game.
 /// </summary>
-public class ScoreManager
+public class ScoreManager : Singleton<ScoreManager>
 {
-    public int Score { get; private set; }
-    private int _targetScore;
-    public static Action<int> OnScoreUpdate;
+    public int Score { get; private set; } = 0;
 
-    public ScoreManager(int targetScore)
+    public static Action<int> OnScoreUpdate;
+    const string SCORE_KEY = "ScoreKey";
+
+    public override void Initialize()
     {
-        _targetScore = targetScore;
+        base.Initialize();
+        SaveScore();
+        OnScoreUpdate?.Invoke(Score);
     }
 
     public void AddPoints(int points)
@@ -19,9 +22,12 @@ public class ScoreManager
         Score += points;
         OnScoreUpdate?.Invoke(Score);
     }
-
-    public bool HasReachedTarget()
+    public void SaveScore()
     {
-        return Score >= _targetScore;
+        var oldScore = Utils.GetData<int>(SCORE_KEY);
+        if(oldScore < Score)
+        {
+            Score.SaveData(SCORE_KEY);
+        }
     }
 }
