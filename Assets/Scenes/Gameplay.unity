@@ -2462,6 +2462,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1470031416}
   - component: {fileID: 1470031417}
+  - component: {fileID: 1470031418}
   m_Layer: 0
   m_Name: BallsContainer
   m_TagString: Untagged
@@ -2496,9 +2497,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33defd83168a7af429646ef19977f9c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _ballSpawner: {fileID: 1470031418}
+  _ballAmount: 60
+--- !u!114 &1470031418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1470031415}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8df5977b5aeb274c9e86d5f55a58746, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   _ballSpawnPoint: {fileID: 1796300535}
   _spawnDelay: 0.05
-  _ballAmount: 60
 --- !u!1 &1550114099
 GameObject:
   m_ObjectHideFlags: 0

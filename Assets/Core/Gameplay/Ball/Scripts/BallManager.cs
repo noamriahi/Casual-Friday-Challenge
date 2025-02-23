@@ -4,20 +4,17 @@ using UnityEngine;
 
 namespace Core.Balls
 {
-    public class BallManager : MonoBehaviour
+    public class BallManager : Singleton<BallManager>
     {
+        [SerializeField] BallSpawner _ballSpawner;
         [Header("Balls")]
-        [SerializeField] Transform _ballSpawnPoint;
-        [SerializeField] float _spawnDelay = 0.05f;
         [SerializeField] int _ballAmount = 60;
 
         bool _isInGame = false;
 
-        public static BallManager Instance;
 
         List<Ball> _ballOnBoard = new List<Ball>();
 
-        private void Awake() => Instance = this;
 
         private void Start()
         {
@@ -28,21 +25,12 @@ namespace Core.Balls
         void OnStartGame()
         {
             BallPool.Instance.DestroyBalls(_ballOnBoard.ToArray());
-            StartCoroutine(SpawnBalls(_ballAmount));
+            _ballSpawner.SpawnBalls(_ballAmount, _ballOnBoard);
             _isInGame = true;
         }
         void OnEndGame()
         {
             _isInGame = false;
-        }
-        IEnumerator SpawnBalls(int ballAmount)
-        {
-            for (int i = 0; i < ballAmount; i++)
-            {
-                var ball = BallPool.Instance.CreateRegularBall(_ballSpawnPoint.position);
-                _ballOnBoard.Add(ball);
-                yield return new WaitForSeconds(_spawnDelay);
-            }
         }
 
         private void Update()
@@ -80,7 +68,7 @@ namespace Core.Balls
             {
                 _ballOnBoard.Remove(ball);
             }
-            StartCoroutine(SpawnBalls(ballAmount));
+            _ballSpawner.SpawnBalls(ballAmount, _ballOnBoard);
 
             if (TapManager.Instance.IsGameOver())
             {
@@ -127,10 +115,9 @@ namespace Core.Balls
             if (ballAmount <= 20) return 2;
             return 4;
         }
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
-            Instance = null;
-
+            base.OnDestroy();
             Ball.OnDestroyBalls -= OnDestroyBallHandler;
             GameEvents.OnGameStart -= OnStartGame;
         }
