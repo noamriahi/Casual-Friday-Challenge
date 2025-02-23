@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
         await UniTask.WaitForSeconds(2f);
         _gamePlayUI.ToggleStartGamePopup(false);
 
-        GameEvents.OnGameStart.Invoke();
+        GameEvents.OnGameStart?.Invoke();
     }
     void OnGameOver()
     {

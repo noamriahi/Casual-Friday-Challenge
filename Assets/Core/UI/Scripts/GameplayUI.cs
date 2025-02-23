@@ -17,14 +17,41 @@ public class GameplayUI : MonoBehaviour
     [SerializeField] GameObject _notEnoughBalls;
 
     bool isFeedbackActive = false;
+    Timer _timer;
 
     void Awake()
     {
         ScoreManager.OnScoreUpdate += OnScoreUpdateHandle;
         TapManager.OnTapUpdateEvent += OnTapUpdateHandle;
         Ball.OnPressNoEnoughBalls += ShowNotEnoughBallFeedback;
+        GameEvents.OnGameStart += OnGameStart;
+        GameEvents.OnGameEnd += OnGameEnd;
+
         ToggleStartGamePopup(false);
         ToggleEndGamePopup(false);
+
+    }
+    void OnGameStart()
+    {
+        _timer = new Timer()
+            .WithTickCallback(OnTimerTick)
+            .WithEndTimerCallback(OnTimerEnd);
+    }
+    void OnGameEnd()
+    {
+        _timer.CancelTimer();
+    }
+    void OnTimerTick(float timeRemaining)
+    {
+        _timerText.text = timeRemaining.ToString();
+    }
+    void OnTimerEnd()
+    {
+        GameEvents.OnGameEnd?.Invoke();
+    }
+    public void CancelTimer()
+    {
+        _timer.CancelTimer();
     }
     private void Start()
     {
@@ -60,5 +87,7 @@ public class GameplayUI : MonoBehaviour
     {
         ScoreManager.OnScoreUpdate -= OnScoreUpdateHandle;
         TapManager.OnTapUpdateEvent -= OnTapUpdateHandle;
+        Ball.OnPressNoEnoughBalls -= ShowNotEnoughBallFeedback;
+        GameEvents.OnGameStart -= OnGameStart;
     }
 }
