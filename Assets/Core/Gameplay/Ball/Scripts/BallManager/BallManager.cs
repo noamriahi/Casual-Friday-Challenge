@@ -14,6 +14,7 @@ namespace Core.Balls
         [SerializeField] int _ballAmount = 60;
 
         bool _isInGame = false;
+        bool _canPress = true;
 
 
         List<Ball> _ballsOnBoard = new List<Ball>();
@@ -46,6 +47,7 @@ namespace Core.Balls
             }
             yield return new WaitForSeconds(0.5f);
 
+            _canPress = true;
             _ballsOnBoard.RemoveAll(balls.Contains);
 
             _ballSpawner.SpawnBalls(balls.Count);
@@ -77,6 +79,7 @@ namespace Core.Balls
 
         private void Update()
         {
+            if (!_canPress) return;
             if (Input.GetMouseButtonDown(0) && _isInGame)
             {
                 DetectClickedBall();
@@ -93,6 +96,8 @@ namespace Core.Balls
                 Ball clickedBall = hit.collider.GetComponent<Ball>();
                 if (clickedBall != null)
                 {
+                    _canPress = false;
+
                     clickedBall.Explode();
                 }
             }

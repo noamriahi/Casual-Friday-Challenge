@@ -1,4 +1,5 @@
 using Core.Popups;
+using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -22,7 +23,14 @@ public class MainMenu : MonoBehaviour
     }
     void StartGame()
     {
-        SceneManager.LoadScene("Gameplay");
+        LoadGaneScene().Forget();
+    }
+    async UniTaskVoid LoadGaneScene()
+    {
+        await Fader.Instance.FadeIn();
+        AsyncOperation loadOperation = SceneManager.LoadSceneAsync("Gameplay");
+        await loadOperation.ToUniTask();
+        await Fader.Instance.FadeOut();
     }
     private void OnDestroy()
     {

@@ -521,7 +521,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gameplayUI: {fileID: 824652798}
-  _gameConfig: {fileID: 11400000, guid: 2d53566dc20e0ed419e52ed27eb1af45, type: 2}
+  _easyConfig: {fileID: 11400000, guid: 200e4e3f7f0b2ab46b6158200ec7fe54, type: 2}
+  _normalConfig: {fileID: 11400000, guid: 2d53566dc20e0ed419e52ed27eb1af45, type: 2}
+  _hardConfig: {fileID: 11400000, guid: 342020da9174fc04bbc8fc458c95dbf0, type: 2}
 --- !u!4 &356069934
 Transform:
   m_ObjectHideFlags: 0
@@ -2239,6 +2241,8 @@ MonoBehaviour:
   _ballTypes:
   - {fileID: 11400000, guid: 4ddda160228fe94408a4a0728d405e40, type: 2}
   - {fileID: 11400000, guid: ca8dec23bc000534eb9e79149073efb1, type: 2}
+  - {fileID: 11400000, guid: 4f1fb537e7dd7824999bb8ae0d006b54, type: 2}
+  - {fileID: 11400000, guid: 831b8afe7e1551e40a0738daae26bfea, type: 2}
   _specialBallPrefab: {fileID: 1245623639589379046, guid: d8a87568a66de724c803c3ecf6ef3229, type: 3}
   _amountOfSpecialToPool: 5
 --- !u!4 &1828600463

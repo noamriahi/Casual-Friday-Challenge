@@ -26,12 +26,12 @@ public class EndGamePopup : Popup
     void RestartGame()
     {
         GameManager.RestartGame();
-        gameObject.SetActive(false);    
+        ClosePopup();
     }
     void ReturnToLobby()
     {
         GameManager.ReturnToLobby();
-        gameObject.SetActive(false);
+        ClosePopup();
     }
 
 }

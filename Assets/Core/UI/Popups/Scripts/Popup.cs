@@ -10,12 +10,14 @@ namespace Core.Popups
         public Action OnDestroyPopup;
         private void Start()
         {
-            _closeButton.onClick.AddListener(ClosePopup);
+            if(_closeButton != null)
+                _closeButton.onClick.AddListener(ClosePopup);
         }
         public abstract void InitPopup();
         protected virtual void ClosePopup()
         {
-            _closeButton.onClick.RemoveListener(ClosePopup);
+            if (_closeButton != null)
+                _closeButton.onClick.RemoveListener(ClosePopup);
             Destroy(gameObject);
         }
         protected virtual void OnDestroy()

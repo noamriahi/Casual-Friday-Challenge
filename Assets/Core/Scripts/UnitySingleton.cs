@@ -6,7 +6,7 @@ namespace Core
     {
         public static T Instance = null;
 
-        private void Start()
+        protected virtual void Start()
         {
             if (Instance == null)
             {

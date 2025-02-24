@@ -11,7 +11,7 @@ public class SettingsPopup : Popup
     [SerializeField] Toggle _sfxToggle;
     [SerializeField] TMP_Dropdown _difficultyDropDown;
 
-    const string SETTINGS_DATA_KEY = "SettingsDataKey";
+    public const string SETTINGS_DATA_KEY = "SettingsDataKey";
     public override void InitPopup()
     {
         var data = Utils.GetData<SettingsData>(SETTINGS_DATA_KEY);

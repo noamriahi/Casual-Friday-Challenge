@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -65,7 +66,14 @@ namespace Core.Addressable
 
         void OnFinishLoading()
         {
-            SceneManager.LoadScene("MainMenu");
+            LoadMenuScene().Forget();
+        }
+        async UniTaskVoid LoadMenuScene()
+        {
+            await Fader.Instance.FadeIn();
+            AsyncOperation loadOperation = SceneManager.LoadSceneAsync("MainMenu");
+            await loadOperation.ToUniTask();
+            await Fader.Instance.FadeOut();
         }
     }
 }
