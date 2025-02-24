@@ -10,40 +10,59 @@ public class GameplayUI : MonoBehaviour
     [SerializeField] TMP_Text _tapText;
     [SerializeField] TMP_Text _targetScoreText;
     [SerializeField] TMP_Text _timerText;
+
     [Header("Game Popups")]
     [SerializeField] GameObject _startGamePopup;
     [SerializeField] GameObject _endGamePopup;
+
     [Header("Feedback Objects")]
     [SerializeField] GameObject _notEnoughBalls;
 
-    bool isFeedbackActive = false;
-    Timer _timer;
+    private Timer _timer;
 
     void Awake()
     {
-        ScoreManager.OnScoreUpdate += OnScoreUpdateHandle;
-        TapManager.OnTapUpdateEvent += OnTapUpdateHandle;
-        Ball.OnPressNoEnoughBalls += ShowNotEnoughBallFeedback;
-        GameEvents.OnGameStart += OnGameStart;
-        GameEvents.OnGameEnd += OnGameEnd;
+        SubscribeToEvents();
 
+        //Initialize UI states
         ToggleStartGamePopup(false);
         ToggleEndGamePopup(false);
 
     }
+    private void SubscribeToEvents()
+    {
+        ScoreManager.OnScoreUpdate += UpdateScoreUI;
+        TapManager.OnTapUpdateEvent += UpdateTapUI;
+        Ball.OnPressNoEnoughBalls += ShowNotEnoughBallFeedback;
+        GameEvents.OnGameStart += OnGameStart;
+        GameEvents.OnGameEnd += OnGameEnd;
+    }
+    private void UnsubscribeToEvents()
+    {
+        ScoreManager.OnScoreUpdate -= UpdateScoreUI;
+        TapManager.OnTapUpdateEvent -= UpdateTapUI;
+        Ball.OnPressNoEnoughBalls -= ShowNotEnoughBallFeedback;
+        GameEvents.OnGameStart -= OnGameStart;
+        GameEvents.OnGameEnd -= OnGameEnd;
+    }
+    private void OnDestroy()
+    {
+        UnsubscribeToEvents();
+    }
+
     void OnGameStart()
     {
         _timer = new Timer()
-            .WithTickCallback(OnTimerTick)
+            .WithTickCallback(UpdateTimerUI)
             .WithEndTimerCallback(OnTimerEnd);
     }
     void OnGameEnd()
     {
         _timer.CancelTimer();
     }
-    void OnTimerTick(float timeRemaining)
+    void UpdateTimerUI(float timeRemaining)
     {
-        _timerText.text = timeRemaining.ToString();
+        _timerText.text = timeRemaining.ToTimerFormat();
     }
     void OnTimerEnd()
     {
@@ -65,30 +84,25 @@ public class GameplayUI : MonoBehaviour
     {
         _endGamePopup.SetActive(state);
     }
-    async void ShowNotEnoughBallFeedback()
+    private void ShowNotEnoughBallFeedback()
     {
-        if (isFeedbackActive) return;
-        isFeedbackActive = true;
-        
-        _notEnoughBalls.gameObject.SetActive(true);
-        await UniTask.WaitForSeconds(1f);
-        _notEnoughBalls.gameObject.SetActive(false);
-        isFeedbackActive = false;
+        if (_notEnoughBalls.activeSelf) return;
+
+        _notEnoughBalls.SetActive(true);
+        ShowNotEnoughBallFeedbackAsync().Forget();
     }
-    void OnScoreUpdateHandle(int score)
+
+    private async UniTask ShowNotEnoughBallFeedbackAsync()
+    {
+        await UniTask.Delay(1000);
+        _notEnoughBalls.SetActive(false);
+    }
+    void UpdateScoreUI(int score)
     {
         _scoreText.text = $"{score}";
     }
-    void OnTapUpdateHandle(int tapAmount)
+    void UpdateTapUI(int tapAmount)
     {
         _tapText.text = $"{tapAmount}";
-    }
-    private void OnDestroy()
-    {
-        ScoreManager.OnScoreUpdate -= OnScoreUpdateHandle;
-        TapManager.OnTapUpdateEvent -= OnTapUpdateHandle;
-        Ball.OnPressNoEnoughBalls -= ShowNotEnoughBallFeedback;
-        GameEvents.OnGameStart -= OnGameStart;
-        GameEvents.OnGameEnd -= OnGameEnd;
     }
 }

@@ -28,4 +28,11 @@ public static class Utils
         }
         return default;
     }
+    public static string ToTimerFormat(this float timeRemaining)
+    {
+        int minutes = Mathf.FloorToInt(timeRemaining / 60);
+        int seconds = Mathf.FloorToInt(timeRemaining % 60);
+        return $"{minutes:00}:{seconds:00}"; // Formats as MM:SS
+    }
+
 }
