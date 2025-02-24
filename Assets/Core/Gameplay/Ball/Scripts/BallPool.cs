@@ -57,7 +57,7 @@ namespace Core.Balls
         private void AssignRandomType(Ball ball)
         {
             BallConfigSO data = _ballTypes[Random.Range(0, _ballTypes.Count)];
-            ball.SetType(data);
+            ball.Initialize(data);
         }
         private RegularBall GetOrCreateBall()
         {

@@ -7,34 +7,32 @@ namespace Core.Balls
 {
     public abstract class Ball : MonoBehaviour
     {
-        [SerializeField] ParticleSystem _exploseEffect;
-        [SerializeField] SpriteRenderer _spriteRenderer;
+        [SerializeField] private ParticleSystem _exploseEffect;
+        [SerializeField] private SpriteRenderer _spriteRenderer;
 
-        public static Action OnPressNoEnoughBalls;
 
         public BallConfigSO BallType { get; private set; }
         public static Action<List<Ball>, Vector3> OnDestroyBalls;
-        
-        public void SetType(BallConfigSO data)
+        public static Action OnPressNoEnoughBalls;
+
+        public void Initialize(BallConfigSO data)
         {
-            _spriteRenderer.enabled = true;
             BallType = data;
             _spriteRenderer.sprite = data.Sprite;
+            _spriteRenderer.enabled = true;
         }
         public void DestroyBall()
         {
-            StartCoroutine(DestroyBallProcess());
+            StartCoroutine(DestroyBallCoroutine());
         }
-        IEnumerator DestroyBallProcess()
+        IEnumerator DestroyBallCoroutine()
         {
             _spriteRenderer.enabled = false;
             _exploseEffect.Play();
             yield return new WaitForSeconds(0.5f);
             BallPool.Instance.DestroyBalls(this);
-
-            _spriteRenderer.enabled = true;
         }
-        public abstract void ExploseBalls();
+        public abstract void Explode();
 
     }
 }

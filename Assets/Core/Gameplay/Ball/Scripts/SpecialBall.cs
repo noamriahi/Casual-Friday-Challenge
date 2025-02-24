@@ -7,7 +7,7 @@ namespace Core.Balls
     {
         [Header("Special Ball")]
         [SerializeField] float _explosionRadius = 2f;
-        public override void ExploseBalls()
+        public override void Explode()
         {
             TapManager.Instance.TapBall();
             List<Ball> ballAtRadius = new List<Ball>();

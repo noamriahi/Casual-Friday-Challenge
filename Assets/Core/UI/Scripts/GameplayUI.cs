@@ -89,5 +89,6 @@ public class GameplayUI : MonoBehaviour
         TapManager.OnTapUpdateEvent -= OnTapUpdateHandle;
         Ball.OnPressNoEnoughBalls -= ShowNotEnoughBallFeedback;
         GameEvents.OnGameStart -= OnGameStart;
+        GameEvents.OnGameEnd -= OnGameEnd;
     }
 }

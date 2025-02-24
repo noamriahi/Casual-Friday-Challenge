@@ -3,15 +3,15 @@ namespace Core.Balls
 {
     public class RegularBall : Ball
     {
-        public override void ExploseBalls()
+        public override void Explode()
         {
             var connectedBalls = BallManager.Instance.FindConnectedBalls(this);
 
             if (connectedBalls.Count >= 3)
             {
                 TapManager.Instance.TapBall();
-                var factor = BallManager.GetScoreCalculateFactor(connectedBalls.Count);
-                new UpdateScoreCommand(connectedBalls.Count * factor).Execute();
+                var scoreFactor = BallManager.GetScoreCalculateFactor(connectedBalls.Count);
+                new UpdateScoreCommand(connectedBalls.Count * scoreFactor).Execute();
 
                 foreach (var ball in connectedBalls)
                 {

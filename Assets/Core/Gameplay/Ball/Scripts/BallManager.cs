@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,6 +6,9 @@ namespace Core.Balls
     public class BallManager : Singleton<BallManager>
     {
         [SerializeField] BallSpawner _ballSpawner;
+        [SerializeField] BallDestroyer _ballDestroyer;
+
+
         [Header("Balls")]
         [SerializeField] int _ballAmount = 60;
 
@@ -18,10 +20,23 @@ namespace Core.Balls
 
         private void Start()
         {
-            Ball.OnDestroyBalls += OnDestroyBallHandler;
+            Ball.OnDestroyBalls += DestroyBalls;
             GameEvents.OnGameStart += OnStartGame;
             GameEvents.OnGameEnd += OnEndGame;
         }
+
+        private void DestroyBalls(List<Ball> list, Vector3 vector)
+        {
+            _ballDestroyer.DestroyBalls(list, vector, _ballOnBoard);
+
+            _ballSpawner.SpawnBalls(list.Count, _ballOnBoard);
+
+            if (TapManager.Instance.IsGameOver())
+            {
+                GameEvents.OnGameEnd?.Invoke();
+            }
+        }
+
         void OnStartGame()
         {
             BallPool.Instance.DestroyBalls(_ballOnBoard.ToArray());
@@ -51,30 +66,11 @@ namespace Core.Balls
                 Ball clickedBall = hit.collider.GetComponent<Ball>();
                 if (clickedBall != null)
                 {
-                    clickedBall.ExploseBalls();
+                    clickedBall.Explode();
                 }
             }
         }
-        void OnDestroyBallHandler(List<Ball> ballToDestroy, Vector3 clickedBallPosition)
-        {
-            if (!_isInGame) return;
-            int ballAmount = ballToDestroy.Count;
-            if(ballAmount > 10)
-            {
-                var specialBall = BallPool.Instance.SpawnSpecialBall(clickedBallPosition);
-                _ballOnBoard.Add(specialBall);
-            }
-            foreach(Ball ball in ballToDestroy)
-            {
-                _ballOnBoard.Remove(ball);
-            }
-            _ballSpawner.SpawnBalls(ballAmount, _ballOnBoard);
 
-            if (TapManager.Instance.IsGameOver())
-            {
-                GameEvents.OnGameEnd?.Invoke();
-            }
-        }
         public List<Ball> FindConnectedBalls(Ball clickedBall)
         {
             List<Ball> matchedBalls = new List<Ball> { clickedBall };
@@ -118,7 +114,7 @@ namespace Core.Balls
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            Ball.OnDestroyBalls -= OnDestroyBallHandler;
+            Ball.OnDestroyBalls -= DestroyBalls;
             GameEvents.OnGameStart -= OnStartGame;
         }
     }
