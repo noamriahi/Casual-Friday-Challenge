@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public static class Utils
+public static partial class Utils
 {
     public static void SaveData<T>(this T data, string dataKey)
     {

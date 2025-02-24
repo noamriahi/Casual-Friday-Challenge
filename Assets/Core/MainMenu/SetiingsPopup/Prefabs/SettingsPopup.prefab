@@ -2098,6 +2098,7 @@ MonoBehaviour:
   _musicToggle: {fileID: 3924303117586564960}
   _sfxToggle: {fileID: 8456446938839108956}
   _difficultyDropDown: {fileID: 8004947175661792175}
+  _frameRect: {fileID: 4598268630042490469}
 --- !u!1 &8027168328428430011
 GameObject:
   m_ObjectHideFlags: 0

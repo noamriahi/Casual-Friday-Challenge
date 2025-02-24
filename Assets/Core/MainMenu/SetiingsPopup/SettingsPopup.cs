@@ -13,10 +13,14 @@ public class SettingsPopup : Popup
     [SerializeField] Toggle _musicToggle;
     [SerializeField] Toggle _sfxToggle;
     [SerializeField] TMP_Dropdown _difficultyDropDown;
+    [SerializeField] RectTransform _frameRect;
 
     public const string SETTINGS_DATA_KEY = "SettingsDataKey";
     public override void InitPopup()
     {
+        _frameRect.ShowFromBottom(.3f);
+
+
         var data = Utils.GetData<SettingsData>(SETTINGS_DATA_KEY);
         if (data != null)
         {
@@ -37,7 +41,10 @@ public class SettingsPopup : Popup
             Difficulty = _difficultyDropDown.value
         };
         data.SaveData(SETTINGS_DATA_KEY);
-        base.ClosePopup();
+        _frameRect.DisapearToTop(0.3f, () =>
+        {
+            base.ClosePopup();
+        });
     }
 }
 

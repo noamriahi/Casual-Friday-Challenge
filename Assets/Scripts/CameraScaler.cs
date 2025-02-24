@@ -1,7 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// This script is made to scale the camera for any resolution
+/// </summary>
 public class CameraScaler : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer backgroundRenderer;
@@ -21,24 +22,19 @@ public class CameraScaler : MonoBehaviour
             return;
         }
 
-        // Get the background's world size
         float bgHeight = backgroundRenderer.bounds.size.y;
         float bgWidth = backgroundRenderer.bounds.size.x;
 
-        // Get screen aspect ratio
         float screenAspect = (float)Screen.width / Screen.height;
         float bgAspect = bgWidth / bgHeight;
 
-        // Adjust camera size to ensure background fits
         if (screenAspect >= bgAspect)
         {
-            cam.orthographicSize = bgHeight / 2f; // Adjust by height
+            cam.orthographicSize = bgHeight / 2f; 
         }
         else
         {
-            cam.orthographicSize = (bgWidth / screenAspect) / 2f; // Adjust by width
+            cam.orthographicSize = (bgWidth / screenAspect) / 2f; 
         }
-
-        Debug.Log($"Camera adjusted to orthographicSize: {cam.orthographicSize}");
     }
 }
