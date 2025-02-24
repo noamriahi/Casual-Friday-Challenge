@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// The GameManager will control the game state
+/// The GameManager will control the game state, The game config and the scene tranaition
 /// </summary>
 public class GameManager : MonoBehaviour
 {
@@ -32,6 +32,9 @@ public class GameManager : MonoBehaviour
         GameEvents.OnGameEnd += OnGameOver;
         StartGame();
     }
+    /// <summary>
+    /// Use the settings to set the difficulty level of the game, the config are set using ScriptableObject
+    /// </summary>
     void SetConfig()
     {
         var settings = Utils.GetData<SettingsData>(SettingsPopup.SETTINGS_DATA_KEY);
@@ -53,12 +56,18 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    /// <summary>
+    /// Open the start popup using a command and addressable and start the game
+    /// </summary>
     void StartGame()
     {
         new OpenPopupCommand("Popups/StartGamePopup").Execute();
 
         GameEvents.OnGameStart?.Invoke();
     }
+    /// <summary>
+    /// Open the end game popup using a command pattern and addressable
+    /// </summary>
     void OnGameOver()
     {
         new OpenPopupCommand("Popups/EndGamePopup").Execute();

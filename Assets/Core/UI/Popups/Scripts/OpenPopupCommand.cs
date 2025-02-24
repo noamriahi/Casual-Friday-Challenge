@@ -3,6 +3,9 @@ using Core.Addressable;
 using UnityEngine;
 namespace Core.Popups
 {
+    /// <summary>
+    /// Load asset and then take the popup script to open it using the popupManager.
+    /// </summary>
     public class OpenPopupCommand : BaseCommand
     {
         private string _addressName;

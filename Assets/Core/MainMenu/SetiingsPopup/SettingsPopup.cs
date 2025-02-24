@@ -4,6 +4,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Settings popup, use a data class to save it in the playerPrefs
+/// </summary>
 public class SettingsPopup : Popup
 {
     [Header("Settings Popup")]
@@ -22,6 +25,9 @@ public class SettingsPopup : Popup
             _difficultyDropDown.value = data.Difficulty;
         }
     }
+    /// <summary>
+    /// When closing the popup, it's save the last changes
+    /// </summary>
     protected override void ClosePopup()
     {
         var data = new SettingsData()
