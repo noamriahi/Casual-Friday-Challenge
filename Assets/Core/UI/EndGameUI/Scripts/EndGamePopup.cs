@@ -5,15 +5,21 @@ using UnityEngine.UI;
 
 public class EndGamePopup : Popup
 {
+    [Header("End Game Popup")]
     [SerializeField] Button _restartButton;
     [SerializeField] Button _returnButton;
     [SerializeField] TMP_Text _winText;
     [SerializeField] TMP_Text _scoreText;
     [SerializeField] TMP_Text _targetScoreText;
     [SerializeField] TMP_Text _highScoreText;
+    [Header("Transition")]
+    [SerializeField] RectTransform _uiFrame;
 
     public override void InitPopup()
     {
+        _uiFrame.ShowFromBottom(0.3f);
+
+
         _restartButton.onClick.AddListener(RestartGame);
         _returnButton.onClick.AddListener(ReturnToLobby);
         bool haveWin = ScoreManager.Instance.HaveWin();
@@ -32,6 +38,13 @@ public class EndGamePopup : Popup
     {
         GameManager.ReturnToLobby();
         ClosePopup();
+    }
+    protected override void ClosePopup()
+    {
+        _uiFrame.DisapearToTop(0.3f, () =>
+        {
+            base.ClosePopup();
+        });
     }
 
 }

@@ -5,10 +5,15 @@ using UnityEngine;
 
 public class StartGamePopup : Popup
 {
+    [Header("Start Game Popup")]
     [SerializeField] TMP_Text _targetScoreText;
     [SerializeField] TMP_Text _highScoreText;
+
+    [Header("Transition")]
+    [SerializeField] RectTransform _uiFrame;
     public override void InitPopup()
     {
+        _uiFrame.ShowFromBottom(0.3f);
         SetTexts();
         DelayBeforeDestroy();
     }
@@ -19,7 +24,14 @@ public class StartGamePopup : Popup
     }
     private async void DelayBeforeDestroy()
     {
-        await UniTask.WaitForSeconds(2f);
-        Destroy(gameObject);
+        await UniTask.WaitForSeconds(1f);
+        ClosePopup();
+    }
+    protected override void ClosePopup()
+    {
+        _uiFrame.DisapearToTop(0.3f, () =>
+        {
+            base.ClosePopup();
+        });
     }
 }

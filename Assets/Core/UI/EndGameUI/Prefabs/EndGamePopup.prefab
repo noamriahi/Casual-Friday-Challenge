@@ -633,12 +633,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb9d89aae4b9cb740966ebd0d46cf56d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _closeButton: {fileID: 0}
   _restartButton: {fileID: 3343570541321286888}
   _returnButton: {fileID: 1553599420660193338}
   _winText: {fileID: 3847477879620955963}
   _scoreText: {fileID: 810672846774162538}
   _targetScoreText: {fileID: 8166166386235815479}
   _highScoreText: {fileID: 6317002333456516522}
+  _uiFrame: {fileID: 8010019670034875453}
 --- !u!1 &6730275190846797615
 GameObject:
   m_ObjectHideFlags: 0
