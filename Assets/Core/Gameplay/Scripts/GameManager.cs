@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour
     }
     void OnGameOver()
     {
-        _gamePlayUI.ToggleEndGamePopup(true);
+        _gamePlayUI.ShowEndGamePopup();
 
     }
     private void OnDestroy()

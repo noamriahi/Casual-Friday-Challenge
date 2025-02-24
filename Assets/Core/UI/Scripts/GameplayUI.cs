@@ -13,7 +13,8 @@ public class GameplayUI : MonoBehaviour
 
     [Header("Game Popups")]
     [SerializeField] GameObject _startGamePopup;
-    [SerializeField] GameObject _endGamePopup;
+
+    [SerializeField] Canvas _canvas;
 
     [Header("Feedback Objects")]
     [SerializeField] GameObject _notEnoughBalls;
@@ -26,7 +27,6 @@ public class GameplayUI : MonoBehaviour
 
         //Initialize UI states
         ToggleStartGamePopup(false);
-        ToggleEndGamePopup(false);
 
     }
     private void SubscribeToEvents()
@@ -80,9 +80,15 @@ public class GameplayUI : MonoBehaviour
     {
         _startGamePopup.SetActive(state);
     }
-    public void ToggleEndGamePopup(bool state)
+    public void ShowEndGamePopup()
     {
-        _endGamePopup.SetActive(state);
+        new LoadAssetCommand("Assets/Core/UI/Prefabs/EndGamePopup.prefab")
+            .WithLoadCallback(LoadEndGamePopup)
+            .Execute();
+    }
+    void LoadEndGamePopup(GameObject popup)
+    {
+        Instantiate(popup, _canvas.transform);
     }
     private void ShowNotEnoughBallFeedback()
     {

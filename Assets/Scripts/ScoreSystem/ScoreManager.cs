@@ -35,6 +35,10 @@ public class ScoreManager : Singleton<ScoreManager>
             Score.SaveData(SCORE_KEY);
         }
     }
+    public int GetHighScore()
+    {
+        return Utils.GetData<int>(SCORE_KEY);
+    }
     public int GetTargetScore()
     {
         return _targetScore;
