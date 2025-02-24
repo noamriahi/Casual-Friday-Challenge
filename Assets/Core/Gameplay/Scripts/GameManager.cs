@@ -8,18 +8,20 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] GameplayUI _gamePlayUI;
+    [SerializeField] GameConfigSO _gameConfig;
     void Start()
     {
-        ScoreManager.Instance.Initialize();
-        TapManager.Instance.Initialize();
+        ScoreManager.Instance.Initialize(_gameConfig.targetScore);
+        TapManager.Instance.Initialize(_gameConfig.maxTap);
+        _gamePlayUI.Initialize(_gameConfig.gameTime);
         GameEvents.OnGameEnd += OnGameOver;
         StartGame();
     }
     async void StartGame()
     {
-        _gamePlayUI.ToggleStartGamePopup(true);
+        _gamePlayUI.ShowStartGamePopup(true);
         await UniTask.WaitForSeconds(2f);
-        _gamePlayUI.ToggleStartGamePopup(false);
+        _gamePlayUI.ShowStartGamePopup(false);
 
         GameEvents.OnGameStart?.Invoke();
     }

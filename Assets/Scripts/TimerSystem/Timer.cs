@@ -3,14 +3,13 @@ using System;
 using System.Threading;
 public class Timer
 {
-    public float totalTime = 30f;
     private float timeRemaining;
     private CancellationTokenSource cts;
 
     public Action<float> OnTimerUpdate;
     public Action OnTimerEnd;
 
-    public Timer()
+    public Timer(int totalTime)
     {
         timeRemaining = totalTime;
 

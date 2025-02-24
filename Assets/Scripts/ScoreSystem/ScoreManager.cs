@@ -11,9 +11,11 @@ public class ScoreManager : Singleton<ScoreManager>
     public static Action<int> OnScoreUpdate;
     const string SCORE_KEY = "ScoreKey";
 
-    public override void Initialize()
+    public void Initialize(int targetScore)
     {
         base.Initialize();
+        _targetScore = targetScore;
+        OnScoreUpdate?.Invoke(0);
         GameEvents.OnGameStart += OnGameStart;
         GameEvents.OnGameEnd += SaveScore;
     }

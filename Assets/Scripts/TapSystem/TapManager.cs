@@ -3,15 +3,17 @@ using UnityEngine;
 
 public class TapManager : Singleton<TapManager>
 {
-    [SerializeField] int _maxTapAmount = 20;
+    int _maxTapAmount = 20;
 
     public static Action<int> OnTapUpdateEvent;
     int _currentTapAmount = 0;
     
 
-    public override void Initialize()
+    public void Initialize(int maxTap)
     {
         base.Initialize();
+        _maxTapAmount = maxTap;
+        OnTapUpdateEvent?.Invoke(_maxTapAmount);
         GameEvents.OnGameStart += OnGameStart;
     }
     void OnGameStart()

@@ -17,10 +17,17 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: bc74b7da53d18c94188d1e74eab16f93
   m_SerializeEntries:
+  - m_GUID: 404e892f245e1904882425477c4e1989
+    m_Address: Popups/StartGamePopup
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreloadAssets
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f79da511079c5a04991f5e196721776e
     m_Address: Popups/EndGamePopup
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - PreloadAssets
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 2af7121abb55e2941836977512243752, type: 2}

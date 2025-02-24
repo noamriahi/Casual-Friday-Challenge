@@ -1,4 +1,6 @@
+using Core.Addressable;
 using Core.Balls;
+using Core.Popups;
 using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
@@ -13,30 +15,24 @@ public class GameplayUI : MonoBehaviour
     [Header("ScoreUI")]
     [SerializeField] Slider _scoreSlide;
     [SerializeField] TMP_Text _scoreText;
-    [Header("Game Popups")]
-    [SerializeField] GameObject _startGamePopup;
-
-    [SerializeField] Canvas _canvas;
 
     [Header("Feedback Objects")]
     [SerializeField] GameObject _notEnoughBalls;
 
-    private Timer _timer;
+    GameObject _startPopup;
 
-    private int _targetScore;
+    private Timer _timer;
+    private int _gameTime;
 
     void Awake()
     {
         SubscribeToEvents();
-
-        //Initialize UI states
-        ToggleStartGamePopup(false);
-
     }
-    private void Start()
+    public void Initialize(int gameTime)
     {
-        _targetScore = ScoreManager.Instance.GetTargetScore();
-        _scoreSlide.maxValue = _targetScore;
+        _gameTime = gameTime;
+        _scoreSlide.maxValue = ScoreManager.Instance.GetTargetScore();
+        UpdateTimerUI(_gameTime);
     }
     private void SubscribeToEvents()
     {
@@ -61,7 +57,7 @@ public class GameplayUI : MonoBehaviour
 
     void OnGameStart()
     {
-        _timer = new Timer()
+        _timer = new Timer(_gameTime)
             .WithTickCallback(UpdateTimerUI)
             .WithEndTimerCallback(OnTimerEnd);
     }
@@ -77,23 +73,29 @@ public class GameplayUI : MonoBehaviour
     {
         GameEvents.OnGameEnd?.Invoke();
     }
-    public void CancelTimer()
+    public void ShowStartGamePopup(bool state)
     {
-        _timer.CancelTimer();
-    }
-    public void ToggleStartGamePopup(bool state)
-    {
-        _startGamePopup.SetActive(state);
+        if(state)
+        {
+            new LoadAssetCommand("Popups/StartGamePopup")
+                .WithLoadCallback(LoadPopup)
+                .Execute();
+        }
+        else
+        {
+            Destroy(_startPopup);
+        }
     }
     public void ShowEndGamePopup()
     {
         new LoadAssetCommand("Popups/EndGamePopup")
-            .WithLoadCallback(LoadEndGamePopup)
+            .WithLoadCallback(LoadPopup)
             .Execute();
     }
-    void LoadEndGamePopup(GameObject popup)
+    void LoadPopup(GameObject popup)
     {
-        Instantiate(popup, _canvas.transform);
+        var popupObeject = popup.GetComponent<Popup>();
+        PopupManager.Instance.OpenPopup(popupObeject);
     }
     private void ShowNotEnoughBallFeedback()
     {
@@ -110,7 +112,8 @@ public class GameplayUI : MonoBehaviour
     }
     void UpdateScoreUI(int score)
     {
-        _scoreText.text = $"{score}/{_targetScore}";
+        var targetScore = ScoreManager.Instance.GetTargetScore();
+        _scoreText.text = $"{score}/{targetScore}";
         _scoreSlide.value = score;
     }
     void UpdateTapUI(int tapAmount)

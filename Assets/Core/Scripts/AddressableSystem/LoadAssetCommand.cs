@@ -1,39 +1,82 @@
-using Core;
 using UnityEngine.AddressableAssets;
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using System;
 
-public class LoadAssetCommand : BaseCommand
+namespace Core.Addressable
 {
-    private readonly string _assetKey;
-    Action<GameObject> _onLoadCallback;
-    public LoadAssetCommand(string assetKey)
+    public class LoadAssetCommand : BaseCommand
     {
-        _assetKey = assetKey;
-    }
-    public LoadAssetCommand WithLoadCallback(Action<GameObject> loadCallback)
-    {
-        _onLoadCallback = loadCallback;
-        return this;
-    }
-    protected override void InternalExecute()
-    {
-        LoadAddressableAsset();
-    }
-    private void LoadAddressableAsset()
-    {
-        Addressables.LoadAssetAsync<GameObject>(_assetKey).Completed += OnAssetLoaded;
-    }
-    private void OnAssetLoaded(AsyncOperationHandle<GameObject> handle)
-    {
-        if (handle.Status == AsyncOperationStatus.Succeeded)
+        private readonly string _assetKey;
+        private Action<GameObject> _onLoadCallback;
+
+        public LoadAssetCommand(string assetKey)
         {
-            _onLoadCallback?.Invoke(handle.Result); 
+            _assetKey = assetKey;
         }
-        else
+
+        public LoadAssetCommand WithLoadCallback(Action<GameObject> loadCallback)
         {
-            Debug.LogError($"Failed to load asset: {_assetKey}");
+            _onLoadCallback = loadCallback;
+            return this;
+        }
+
+        protected override void InternalExecute()
+        {
+            CheckAndLoadAsset();
+        }
+
+        private void CheckAndLoadAsset()
+        {
+            Addressables.GetDownloadSizeAsync(_assetKey).Completed += handle =>
+            {
+                if (handle.Status == AsyncOperationStatus.Succeeded)
+                {
+                    long downloadSize = handle.Result;
+                    Addressables.Release(handle); // Release the handle
+
+                    if (downloadSize > 0)
+                    {
+                        Debug.Log($"Asset {_assetKey} needs to be downloaded. Size: {downloadSize / (1024f * 1024f):F2} MB");
+
+                        Addressables.DownloadDependenciesAsync(_assetKey).Completed += downloadHandle =>
+                        {
+                            if (downloadHandle.Status == AsyncOperationStatus.Succeeded)
+                            {
+                                Addressables.Release(downloadHandle); // Release the download handle
+                                LoadAddressableAsset(); // Now load the asset after downloading
+                            }
+                            else
+                            {
+                                Debug.LogError($"Failed to download asset {_assetKey}");
+                            }
+                        };
+                    }
+                    else
+                    {
+                        LoadAddressableAsset();
+                    }
+                }
+                else
+                {
+                    Debug.LogError("Error getting download size for asset: " + _assetKey);
+                }
+            };
+        }
+
+        private void LoadAddressableAsset()
+        {
+            Addressables.LoadAssetAsync<GameObject>(_assetKey).Completed += handle =>
+            {
+                if (handle.Status == AsyncOperationStatus.Succeeded)
+                {
+                    _onLoadCallback?.Invoke(handle.Result);
+                }
+                else
+                {
+                    Debug.LogError($"Failed to load asset: {_assetKey}");
+                }
+            };
         }
     }
 }
