@@ -2,15 +2,17 @@ using Core.Balls;
 using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameplayUI : MonoBehaviour
 {
     [Header("Top UI Texts")]
-    [SerializeField] TMP_Text _scoreText;
     [SerializeField] TMP_Text _tapText;
-    [SerializeField] TMP_Text _targetScoreText;
     [SerializeField] TMP_Text _timerText;
 
+    [Header("ScoreUI")]
+    [SerializeField] Slider _scoreSlide;
+    [SerializeField] TMP_Text _scoreText;
     [Header("Game Popups")]
     [SerializeField] GameObject _startGamePopup;
 
@@ -21,6 +23,8 @@ public class GameplayUI : MonoBehaviour
 
     private Timer _timer;
 
+    private int _targetScore;
+
     void Awake()
     {
         SubscribeToEvents();
@@ -28,6 +32,11 @@ public class GameplayUI : MonoBehaviour
         //Initialize UI states
         ToggleStartGamePopup(false);
 
+    }
+    private void Start()
+    {
+        _targetScore = ScoreManager.Instance.GetTargetScore();
+        _scoreSlide.maxValue = _targetScore;
     }
     private void SubscribeToEvents()
     {
@@ -72,17 +81,13 @@ public class GameplayUI : MonoBehaviour
     {
         _timer.CancelTimer();
     }
-    private void Start()
-    {
-        _targetScoreText.text = ScoreManager.Instance.GetTargetScore().ToString();
-    }
     public void ToggleStartGamePopup(bool state)
     {
         _startGamePopup.SetActive(state);
     }
     public void ShowEndGamePopup()
     {
-        new LoadAssetCommand("Assets/Core/UI/Prefabs/EndGamePopup.prefab")
+        new LoadAssetCommand("Popups/EndGamePopup")
             .WithLoadCallback(LoadEndGamePopup)
             .Execute();
     }
@@ -105,7 +110,8 @@ public class GameplayUI : MonoBehaviour
     }
     void UpdateScoreUI(int score)
     {
-        _scoreText.text = $"{score}";
+        _scoreText.text = $"{score}/{_targetScore}";
+        _scoreSlide.value = score;
     }
     void UpdateTapUI(int tapAmount)
     {

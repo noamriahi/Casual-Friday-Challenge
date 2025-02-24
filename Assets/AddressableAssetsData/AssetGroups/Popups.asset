@@ -18,7 +18,7 @@ MonoBehaviour:
   m_GUID: bc74b7da53d18c94188d1e74eab16f93
   m_SerializeEntries:
   - m_GUID: f79da511079c5a04991f5e196721776e
-    m_Address: Assets/Core/UI/Prefabs/EndGamePopup.prefab
+    m_Address: Popups/EndGamePopup
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
