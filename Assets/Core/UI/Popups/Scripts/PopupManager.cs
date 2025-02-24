@@ -1,7 +1,6 @@
 using UnityEngine;
-using Core;
-using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.AddressableAssets;
 
 namespace Core.Popups
 {
@@ -24,7 +23,13 @@ namespace Core.Popups
             var popup = _popupsQueue.Dequeue();
             var newPopup = Instantiate(popup, _popupCanvas.transform);
             newPopup.InitPopup();
-            newPopup.OnDestroyPopup += OpenNextPopup;
+            newPopup.OnDestroyPopup += ()=> 
+            {
+                Addressables.ReleaseInstance(newPopup.gameObject);
+                newPopup.OnDestroyPopup = null;
+                _currentPopup = null;
+                OpenNextPopup();
+            };
             _currentPopup = newPopup;
             
         }

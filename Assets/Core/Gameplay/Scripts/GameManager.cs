@@ -1,4 +1,5 @@
-using Cysharp.Threading.Tasks;
+using Core.Popups;
+using Core.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,27 +8,31 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] GameplayUI _gamePlayUI;
+    [SerializeField] GameplayUI _gameplayUI;
     [SerializeField] GameConfigSO _gameConfig;
-    void Start()
+    private void Start()
+    {
+        InitializeGame();
+    }
+    private void InitializeGame()
     {
         ScoreManager.Instance.Initialize(_gameConfig.targetScore);
         TapManager.Instance.Initialize(_gameConfig.maxTap);
-        _gamePlayUI.Initialize(_gameConfig.gameTime);
+        _gameplayUI.Initialize(_gameConfig.gameTime);
+
         GameEvents.OnGameEnd += OnGameOver;
         StartGame();
     }
-    async void StartGame()
+
+    void StartGame()
     {
-        _gamePlayUI.ShowStartGamePopup(true);
-        await UniTask.WaitForSeconds(2f);
-        _gamePlayUI.ShowStartGamePopup(false);
+        new OpenPopupCommand("Popups/StartGamePopup").Execute();
 
         GameEvents.OnGameStart?.Invoke();
     }
     void OnGameOver()
     {
-        _gamePlayUI.ShowEndGamePopup();
+        new OpenPopupCommand("Popups/EndGamePopup").Execute();
 
     }
     private void OnDestroy()

@@ -6,118 +6,57 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GameplayUI : MonoBehaviour
+namespace Core.UI
 {
-    [Header("Top UI Texts")]
-    [SerializeField] TMP_Text _tapText;
-    [SerializeField] TMP_Text _timerText;
+    public class GameplayUI : MonoBehaviour
+    {
+        [Header("Top UI Texts")]
+        [SerializeField] TMP_Text _tapText;
+        [SerializeField] TMP_Text _timerText;
 
-    [Header("ScoreUI")]
-    [SerializeField] Slider _scoreSlide;
-    [SerializeField] TMP_Text _scoreText;
+        [Header("ScoreUI")]
+        [SerializeField] Slider _scoreSlider;
+        [SerializeField] TMP_Text _scoreText;
 
-    [Header("Feedback Objects")]
-    [SerializeField] GameObject _notEnoughBalls;
+        [Header("Feedback Objects")]
+        [SerializeField] GameObject _notEnoughBalls;
 
-    GameObject _startPopup;
 
-    private Timer _timer;
-    private int _gameTime;
+        private GamePresenter _presenter;
 
-    void Awake()
-    {
-        SubscribeToEvents();
-    }
-    public void Initialize(int gameTime)
-    {
-        _gameTime = gameTime;
-        _scoreSlide.maxValue = ScoreManager.Instance.GetTargetScore();
-        UpdateTimerUI(_gameTime);
-    }
-    private void SubscribeToEvents()
-    {
-        ScoreManager.OnScoreUpdate += UpdateScoreUI;
-        TapManager.OnTapUpdateEvent += UpdateTapUI;
-        Ball.OnPressNoEnoughBalls += ShowNotEnoughBallFeedback;
-        GameEvents.OnGameStart += OnGameStart;
-        GameEvents.OnGameEnd += OnGameEnd;
-    }
-    private void UnsubscribeToEvents()
-    {
-        ScoreManager.OnScoreUpdate -= UpdateScoreUI;
-        TapManager.OnTapUpdateEvent -= UpdateTapUI;
-        Ball.OnPressNoEnoughBalls -= ShowNotEnoughBallFeedback;
-        GameEvents.OnGameStart -= OnGameStart;
-        GameEvents.OnGameEnd -= OnGameEnd;
-    }
-    private void OnDestroy()
-    {
-        UnsubscribeToEvents();
-    }
+        internal int _gameTime;
 
-    void OnGameStart()
-    {
-        _timer = new Timer(_gameTime)
-            .WithTickCallback(UpdateTimerUI)
-            .WithEndTimerCallback(OnTimerEnd);
-    }
-    void OnGameEnd()
-    {
-        _timer.CancelTimer();
-    }
-    void UpdateTimerUI(float timeRemaining)
-    {
-        _timerText.text = timeRemaining.ToTimerFormat();
-    }
-    void OnTimerEnd()
-    {
-        GameEvents.OnGameEnd?.Invoke();
-    }
-    public void ShowStartGamePopup(bool state)
-    {
-        if(state)
+        private void Awake()
         {
-            new LoadAssetCommand("Popups/StartGamePopup")
-                .WithLoadCallback(LoadPopup)
-                .Execute();
+            _presenter = new GamePresenter(this);
         }
-        else
+        private void OnDestroy()
         {
-            Destroy(_startPopup);
+            _presenter.Dispose();
         }
+        public void Initialize(int gameTime)
+        {
+            _gameTime = gameTime;
+            _scoreSlider.maxValue = ScoreManager.Instance.GetTargetScore();
+        }
+        public void SetTimerText(float time) => _timerText.text = time.ToTimerFormat();
+        public void ShowNotEnoughBallsFeedback()
+        {
+            if (_notEnoughBalls.activeSelf) return;
+            _notEnoughBalls.SetActive(true);
+            HideNotEnoughBallsAfterDelay().Forget();
+        }
+        private async UniTask HideNotEnoughBallsAfterDelay()
+        {
+            await UniTask.Delay(1000);
+            _notEnoughBalls.SetActive(false);
+        }
+        public void SetScore(int score, int targetScore)
+        {
+            _scoreText.text = $"{score}/{targetScore}";
+            _scoreSlider.value = score;
+        }
+        internal void SetTapAmount(int tapAmount) => _tapText.text = tapAmount.ToString();
     }
-    public void ShowEndGamePopup()
-    {
-        new LoadAssetCommand("Popups/EndGamePopup")
-            .WithLoadCallback(LoadPopup)
-            .Execute();
-    }
-    void LoadPopup(GameObject popup)
-    {
-        var popupObeject = popup.GetComponent<Popup>();
-        PopupManager.Instance.OpenPopup(popupObeject);
-    }
-    private void ShowNotEnoughBallFeedback()
-    {
-        if (_notEnoughBalls.activeSelf) return;
 
-        _notEnoughBalls.SetActive(true);
-        ShowNotEnoughBallFeedbackAsync().Forget();
-    }
-
-    private async UniTask ShowNotEnoughBallFeedbackAsync()
-    {
-        await UniTask.Delay(1000);
-        _notEnoughBalls.SetActive(false);
-    }
-    void UpdateScoreUI(int score)
-    {
-        var targetScore = ScoreManager.Instance.GetTargetScore();
-        _scoreText.text = $"{score}/{targetScore}";
-        _scoreSlide.value = score;
-    }
-    void UpdateTapUI(int tapAmount)
-    {
-        _tapText.text = $"{tapAmount}";
-    }
 }

@@ -520,7 +520,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be197b5fd5a1c1d4a93eb650baa70e67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gamePlayUI: {fileID: 824652798}
+  _gameplayUI: {fileID: 824652798}
   _gameConfig: {fileID: 11400000, guid: 2d53566dc20e0ed419e52ed27eb1af45, type: 2}
 --- !u!4 &356069934
 Transform:
@@ -1176,10 +1176,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _tapText: {fileID: 836916978}
   _timerText: {fileID: 111836268}
-  _scoreSlide: {fileID: 1069963265}
+  _scoreSlider: {fileID: 1069963265}
   _scoreText: {fileID: 994140750}
-  _startGamePopup: {fileID: 0}
-  _canvas: {fileID: 824652801}
   _notEnoughBalls: {fileID: 1928203753}
 --- !u!114 &824652799
 MonoBehaviour:

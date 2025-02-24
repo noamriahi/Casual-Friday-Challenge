@@ -19,7 +19,7 @@ namespace Core.Balls
         List<Ball> _ballsOnBoard = new List<Ball>();
 
 
-        private void Start()
+        private void Awake()
         {
             Ball.OnDestroyBalls += HandleBallDestruction;
             GameEvents.OnGameStart += OnStartGame;

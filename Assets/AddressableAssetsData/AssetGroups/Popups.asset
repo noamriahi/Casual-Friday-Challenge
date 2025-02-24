@@ -23,6 +23,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - PreloadAssets
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: be1f896c3f6a19743b0098e6be4d4218
+    m_Address: Popups/SettingsPopup
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreloadAssets
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f79da511079c5a04991f5e196721776e
     m_Address: Popups/EndGamePopup
     m_ReadOnly: 0

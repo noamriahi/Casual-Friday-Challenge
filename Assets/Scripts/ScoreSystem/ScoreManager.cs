@@ -9,7 +9,7 @@ public class ScoreManager : Singleton<ScoreManager>
     int _targetScore = 400;
 
     public static Action<int> OnScoreUpdate;
-    const string SCORE_KEY = "ScoreKey";
+    public const string SCORE_KEY = "ScoreKey";
 
     public void Initialize(int targetScore)
     {
