@@ -1,3 +1,4 @@
+using Features.Score;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,10 +13,10 @@ namespace Core.Balls
             TapManager.Instance.TapBall();
             List<Ball> ballAtRadius = new List<Ball>();
             BallManager.Instance.GetBallAtRadius(ballAtRadius, this, _explosionRadius);
-            foreach(Ball ball in ballAtRadius)
-            {
-                ball.DestroyBall();
-            }
+
+            var scoreFactor = BallManager.GetScoreCalculateFactor(ballAtRadius.Count);
+            new UpdateScoreCommand(ballAtRadius.Count * scoreFactor).Execute();
+            OnDestroyBalls?.Invoke(ballAtRadius, transform.position);
         }
     }
 }

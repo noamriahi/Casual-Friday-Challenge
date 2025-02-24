@@ -2239,7 +2239,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b83886292c7575e43ba8bc5bc7356dd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxTapAmount: 5
+  _maxTapAmount: 20
 --- !u!1 &1322542512
 GameObject:
   m_ObjectHideFlags: 0
@@ -2884,8 +2884,6 @@ MonoBehaviour:
   _ballTypes:
   - {fileID: 11400000, guid: 4ddda160228fe94408a4a0728d405e40, type: 2}
   - {fileID: 11400000, guid: ca8dec23bc000534eb9e79149073efb1, type: 2}
-  - {fileID: 11400000, guid: 4f1fb537e7dd7824999bb8ae0d006b54, type: 2}
-  - {fileID: 11400000, guid: 831b8afe7e1551e40a0738daae26bfea, type: 2}
   _specialBallPrefab: {fileID: 1245623639589379046, guid: d8a87568a66de724c803c3ecf6ef3229, type: 3}
   _amountOfSpecialToPool: 5
 --- !u!4 &1828600463

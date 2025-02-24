@@ -13,10 +13,6 @@ namespace Core.Balls
                 var scoreFactor = BallManager.GetScoreCalculateFactor(connectedBalls.Count);
                 new UpdateScoreCommand(connectedBalls.Count * scoreFactor).Execute();
 
-                foreach (var ball in connectedBalls)
-                {
-                    ball.DestroyBall();
-                }
                 OnDestroyBalls?.Invoke(connectedBalls,transform.position);
             }
             else

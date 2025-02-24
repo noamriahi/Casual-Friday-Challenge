@@ -9,16 +9,21 @@ namespace Core.Balls
     {
         [SerializeField] Transform _ballSpawnPoint;
         [SerializeField] float _spawnDelay = 0.05f;
-        public void SpawnBalls(int ballAmount, List<Ball> ballInBoard)
+        public void SpawnBalls(int ballAmount)
         {
-            StartCoroutine(ProceedSpawnBalls(ballAmount, ballInBoard));
+            StartCoroutine(ProceedSpawnBalls(ballAmount));
         }
-        IEnumerator ProceedSpawnBalls(int ballAmount, List<Ball> ballInBoard)
+        public void SpawnSpecialBall(Vector3 spawnPosition)
+        {
+            var specialBall = BallPool.Instance.SpawnSpecialBall(spawnPosition);
+            BallManager.Instance.RegisterBall(specialBall);
+        }
+        IEnumerator ProceedSpawnBalls(int ballAmount)
         {
             for (int i = 0; i < ballAmount; i++)
             {
-                var ball = BallPool.Instance.CreateRegularBall(_ballSpawnPoint.position);
-                ballInBoard.Add(ball);
+                var newBall = BallPool.Instance.CreateRegularBall(_ballSpawnPoint.position);
+                BallManager.Instance.RegisterBall(newBall);
                 yield return new WaitForSeconds(_spawnDelay);
             }
         }
