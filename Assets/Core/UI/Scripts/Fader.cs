@@ -3,6 +3,9 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
 
+/// <summary>
+/// This is the fader that is use to fade in and out for the scene transition, it's work async and it's a Unity singleton(Leave on all the scenes)
+/// </summary>
 public class Fader : UnitySingleton<Fader>
 {
     [SerializeField] CanvasGroup _fader;

@@ -1,5 +1,9 @@
 using UnityEngine;
 
+/// <summary>
+/// This script is a base of singleton, that will leave only in one scene.
+/// </summary>
+/// <typeparam name="T">The class that inherit from the singleton</typeparam>
 public class Singleton<T> : MonoBehaviour where T : Singleton<T>
 {
     static T _instance = null;

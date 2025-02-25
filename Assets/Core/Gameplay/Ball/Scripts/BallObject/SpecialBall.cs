@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Core.Balls
 {
+    /// <summary>
+    /// This is the special ball script, find balls on radius(2 as default) and explose them.
+    /// </summary>
     public class SpecialBall : Ball
     {
         [Header("Special Ball")]
@@ -11,7 +14,7 @@ namespace Core.Balls
         public override void Explode()
         {
             TapManager.Instance.TapBall();
-            List<Ball> ballAtRadius = new List<Ball>();
+            List<Ball> ballAtRadius = new List<Ball>() { this };
             BallManager.Instance.GetBallAtRadius(ballAtRadius, this, _explosionRadius);
 
             var scoreFactor = BallManager.GetScoreCalculateFactor(ballAtRadius.Count);

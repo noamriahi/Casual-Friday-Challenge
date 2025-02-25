@@ -8,6 +8,10 @@ using UnityEngine.UI;
 
 namespace Core.UI
 {
+    /// <summary>
+    /// This is the main UI script of the gameplay, I use the MVP pattern(of course no need for model)
+    /// This script is the "View" and there is a presenter that handle the logic.
+    /// </summary>
     public class GameplayUI : MonoBehaviour
     {
         [Header("Top UI Texts")]
@@ -24,6 +28,7 @@ namespace Core.UI
 
         private GamePresenter _presenter;
 
+
         internal int _gameTime;
 
         private void Awake()
@@ -37,6 +42,7 @@ namespace Core.UI
         public void Initialize(int gameTime)
         {
             _gameTime = gameTime;
+            SetTimerText(gameTime);
             _scoreSlider.maxValue = ScoreManager.Instance.GetTargetScore();
         }
         public void SetTimerText(float time) => _timerText.text = time.ToTimerFormat();
@@ -51,10 +57,15 @@ namespace Core.UI
             await UniTask.Delay(1000);
             _notEnoughBalls.SetActive(false);
         }
-        public void SetScore(int score, int targetScore)
+        public void SetScore(int score, int targetScore, bool reachScore = false)
         {
             _scoreText.text = $"{score}/{targetScore}";
             _scoreSlider.value = score;
+            if (reachScore) 
+            { 
+                _scoreSlider.GetComponent<RectTransform>().BounceScaleUI(1f);
+            }
+
         }
         internal void SetTapAmount(int tapAmount) => _tapText.text = tapAmount.ToString();
     }

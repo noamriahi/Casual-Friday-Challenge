@@ -1,11 +1,11 @@
 using DG.Tweening;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
+/// <summary>
+/// Part of the utils, There is function that make animation generic and easy.
+/// I use it using dotween because as you know, Animator in UI is a bad practice.
+/// </summary>
 public static partial class Utils
 {
     public static void ShowFromBottom(this RectTransform uiObject, float duration, Action callback = null)
@@ -16,7 +16,6 @@ public static partial class Utils
 
         uiObject.anchoredPosition = new Vector2(originalPosition.x, offScreenY);
 
-        // Animate to the saved target position.
         uiObject.DOAnchorPos(originalPosition, duration).OnComplete(()=>callback?.Invoke());
     }
     public static void DisapearToTop(this RectTransform uiObject, float duration, Action callback = null)
@@ -27,7 +26,14 @@ public static partial class Utils
 
         var targetPosition = new Vector2(originalPosition.x, offScreenY);
 
-        // Animate to the saved target position.
         uiObject.DOAnchorPos(targetPosition, duration).OnComplete(() => callback?.Invoke());
+    }
+    public static void BounceScaleUI(this RectTransform uiObject, float duration, float scale = 1.3f, Action callback = null)
+    {
+        var scaleVector = new Vector2(scale, scale);
+        uiObject.DOScale(scaleVector, duration / 2).OnComplete(() =>
+        {
+            uiObject.DOScale(Vector2.one, duration / 2).OnComplete(() => callback?.Invoke());
+        });
     }
 }

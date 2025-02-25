@@ -30,7 +30,7 @@ namespace Core.Balls
             _spriteRenderer.enabled = false;
             _exploseEffect.Play();
             yield return new WaitForSeconds(0.5f);
-            BallPool.Instance.DestroyBalls(this);
+            BallPool.Instance.DestroyBalls(new HashSet<Ball> { this });
         }
         public abstract void Explode();
 

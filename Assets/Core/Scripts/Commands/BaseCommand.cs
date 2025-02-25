@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace Core
 {
+    /// <summary>
+    /// This class implement the pattern Command, every command will inherit from this class.
+    /// </summary>
     public abstract class BaseCommand
     {
         bool _isExecuted;

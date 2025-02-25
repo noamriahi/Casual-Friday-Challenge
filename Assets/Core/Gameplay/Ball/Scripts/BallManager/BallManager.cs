@@ -4,20 +4,26 @@ using UnityEngine;
 
 namespace Core.Balls
 {
+    /// <summary>
+    /// This is the scripts that manage the ball system.
+    /// It's create balls, destroy them, save the ball list and find other ball for explostion logics.
+    /// </summary>
     public class BallManager : Singleton<BallManager>
     {
-        [SerializeField] BallSpawner _ballSpawner;
-        [SerializeField] BallDestroyer _ballDestroyer;
+        [Header("Ball componenets")]
+        [SerializeField] private BallSpawner _ballSpawner;
+        [SerializeField] private BallDestroyer _ballDestroyer;
 
 
         [Header("Balls")]
-        [SerializeField] int _ballAmount = 60;
+        [SerializeField] private int _ballAmount = 60;
 
-        bool _isInGame = false;
-        bool _canPress = true;
+        private bool _isInGame = false;
+        private bool _canPress = true;
 
 
-        List<Ball> _ballsOnBoard = new List<Ball>();
+        //I use hash table for better performance on the search
+        private HashSet<Ball> _ballsOnBoard = new HashSet<Ball>();
 
 
         private void Awake()
@@ -25,6 +31,13 @@ namespace Core.Balls
             Ball.OnDestroyBalls += HandleBallDestruction;
             GameEvents.OnGameStart += OnStartGame;
             GameEvents.OnGameEnd += OnEndGame;
+        }
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            Ball.OnDestroyBalls -= HandleBallDestruction;
+            GameEvents.OnGameStart -= OnStartGame;
+            GameEvents.OnGameEnd -= OnEndGame;
         }
         /// <summary>
         /// On destroy balls, do it on the data from the manager and recreate them again
@@ -38,17 +51,14 @@ namespace Core.Balls
         }
         private IEnumerator DestroyAndRespawnBalls(List<Ball> balls, Vector3 position)
         {
+            _canPress = false;
             _ballDestroyer.DestroyBalls(balls, position);
-
-
-            if (TapManager.Instance.IsGameOver())
-            {
-                GameEvents.OnGameEnd?.Invoke();
-            }
             yield return new WaitForSeconds(0.5f);
 
-            _canPress = true;
-            _ballsOnBoard.RemoveAll(balls.Contains);
+            foreach (var ball in balls)
+            {
+                _ballsOnBoard.Remove(ball);
+            }
 
             _ballSpawner.SpawnBalls(balls.Count);
 
@@ -56,20 +66,24 @@ namespace Core.Balls
             {
                 _ballSpawner.SpawnSpecialBall(position);
             }
+
+            if (TapManager.Instance.IsGameOver())
+            {
+                GameEvents.OnGameEnd?.Invoke();
+            }
+            _canPress = true;
         }
         public void RegisterBall(Ball ball)
         {
-            if (!_ballsOnBoard.Contains(ball))
-            {
-                _ballsOnBoard.Add(ball);
-            }
+            _ballsOnBoard.Add(ball);
         }
         void OnStartGame()
         {
-            BallPool.Instance.DestroyBalls(_ballsOnBoard.ToArray());
+            BallPool.Instance.DestroyBalls(_ballsOnBoard);
             _ballsOnBoard.Clear();
 
             _ballSpawner.SpawnBalls(_ballAmount);
+            _canPress = true;
             _isInGame = true;
         }
         void OnEndGame()
@@ -96,8 +110,6 @@ namespace Core.Balls
                 Ball clickedBall = hit.collider.GetComponent<Ball>();
                 if (clickedBall != null)
                 {
-                    _canPress = false;
-
                     clickedBall.Explode();
                 }
             }
@@ -109,23 +121,23 @@ namespace Core.Balls
         /// <returns></returns>
         public List<Ball> FindConnectedBalls(Ball clickedBall)
         {
-            var connectedBalls = new List<Ball> { clickedBall };
+            var connectedBalls = new HashSet<Ball> { clickedBall };
             RecursiveFind(clickedBall, connectedBalls);
-            return connectedBalls;
+            return new List<Ball>(connectedBalls);
         }
 
-        private void RecursiveFind(Ball ball, List<Ball> matchedBalls)
+        private void RecursiveFind(Ball ball, HashSet<Ball> matchedBalls)
         {
             foreach (Ball otherBall in _ballsOnBoard)
             {
-                if (!matchedBalls.Contains(otherBall) && otherBall.BallType == ball.BallType)
+                if (matchedBalls.Contains(otherBall)) continue;
+                if (otherBall.BallType != ball.BallType) continue;
+
+                float distance = Vector2.Distance(ball.transform.position, otherBall.transform.position);
+                if (distance < 1.2f)
                 {
-                    float distance = Vector2.Distance(ball.transform.position, otherBall.transform.position);
-                    if (distance < 1.2f)
-                    {
-                        matchedBalls.Add(otherBall);
-                        RecursiveFind(otherBall, matchedBalls);
-                    }
+                    matchedBalls.Add(otherBall);
+                    RecursiveFind(otherBall, matchedBalls);
                 }
             }
         }
@@ -133,6 +145,8 @@ namespace Core.Balls
         {
             foreach (Ball otherBall in _ballsOnBoard)
             {
+                if (otherBall == ball || matchedBalls.Contains(otherBall)) continue;
+
                 float distance = Vector2.Distance(ball.transform.position, otherBall.transform.position);
                 if (distance < radius)
                 {
@@ -147,12 +161,7 @@ namespace Core.Balls
             if (ballAmount <= 20) return 2;
             return 4;
         }
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-            Ball.OnDestroyBalls -= HandleBallDestruction;
-            GameEvents.OnGameStart -= OnStartGame;
-        }
+
     }
 }
 public enum BallType

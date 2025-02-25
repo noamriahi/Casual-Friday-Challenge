@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -84,7 +85,7 @@ namespace Core.Balls
             return ball;
         }
 
-        public void DestroyBalls(params Ball[] balls)
+        public void DestroyBalls(HashSet<Ball> balls)
         {
             foreach (var ball in balls)
             {

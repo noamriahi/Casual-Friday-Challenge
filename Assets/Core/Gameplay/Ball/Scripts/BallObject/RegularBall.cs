@@ -1,6 +1,9 @@
 using Features.Score;
 namespace Core.Balls
 {
+    /// <summary>
+    /// This is the regular ball script, handle the match of a regular ball(more then 3)
+    /// </summary>
     public class RegularBall : Ball
     {
         public override void Explode()

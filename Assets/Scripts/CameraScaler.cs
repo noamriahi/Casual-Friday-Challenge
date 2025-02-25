@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// This script is made to scale the camera for any resolution
+/// This script is made to scale the camera for any resolution.
 /// </summary>
 public class CameraScaler : MonoBehaviour
 {

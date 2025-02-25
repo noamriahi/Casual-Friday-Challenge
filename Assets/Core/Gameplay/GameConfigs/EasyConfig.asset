@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: EasyConfig
   m_EditorClassIdentifier: 
   gameTime: 50
-  targetScore: 300
+  targetScore: 150
   maxTap: 25
