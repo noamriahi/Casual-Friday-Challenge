@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace Core.Balls
 {
@@ -9,7 +10,7 @@ namespace Core.Balls
     /// </summary>
     public class BallPool : Singleton<BallPool>
     {
-        [Header("Regualr Balls")]
+        [Header("Regular Balls")]
         [SerializeField] private RegularBall _regularBallPrefab;
         [SerializeField] private Transform _ballParent;
         [SerializeField] private int _amountToPool = 60;
@@ -19,27 +20,38 @@ namespace Core.Balls
         [SerializeField] private SpecialBall _specialBallPrefab;
         [SerializeField] private int _amountOfSpecialToPool = 5;
 
-        Queue<RegularBall> _ballQueue = new Queue<RegularBall>();
-        Queue<SpecialBall> _specialsBallQueue = new Queue<SpecialBall>();
+        private ObjectPool<RegularBall> _regularBallPool;
+        private ObjectPool<SpecialBall> _specialBallPool;
 
-
-        private void Start()
+        private void Awake()
         {
+            _regularBallPool = new ObjectPool<RegularBall>(
+                createFunc: () => Instantiate(_regularBallPrefab, _ballParent),
+                actionOnGet: ball => ball.gameObject.SetActive(true),
+                actionOnRelease: ball => ball.gameObject.SetActive(false),
+                collectionCheck: false,
+                defaultCapacity: _amountToPool
+            );
+
+            _specialBallPool = new ObjectPool<SpecialBall>(
+                createFunc: () => Instantiate(_specialBallPrefab, _ballParent),
+                actionOnGet: ball => ball.gameObject.SetActive(true),
+                actionOnRelease: ball => ball.gameObject.SetActive(false),
+                collectionCheck: false,
+                defaultCapacity: _amountOfSpecialToPool
+            );
+
+            // Prepopulate the pools
             for (int i = 0; i < _amountToPool; i++)
-            {
-                var newBall = Instantiate(_regularBallPrefab, _ballParent);
-                newBall.gameObject.SetActive(false);
-                _ballQueue.Enqueue(newBall);
-            }
+                _regularBallPool.Release(_regularBallPool.Get());
+
             for (int i = 0; i < _amountOfSpecialToPool; i++)
-            {
-                var newBall = Instantiate(_specialBallPrefab, _ballParent);
-                newBall.gameObject.SetActive(false);
-                _specialsBallQueue.Enqueue(newBall);
-            }
+                _specialBallPool.Release(_specialBallPool.Get());
         }
 
-
+        /// <summary>
+        /// Creates a regular ball at a given position.
+        /// </summary>
         public RegularBall CreateRegularBall(Vector3 position)
         {
             RegularBall newBall = GetOrCreateBall();
@@ -48,6 +60,9 @@ namespace Core.Balls
             return newBall;
         }
 
+        /// <summary>
+        /// Spawns a special ball at the given position.
+        /// </summary>
         public SpecialBall SpawnSpecialBall(Vector3 position)
         {
             SpecialBall specialBall = GetOrCreateSpecialBall();
@@ -60,42 +75,33 @@ namespace Core.Balls
             BallConfigSO data = _ballTypes[Random.Range(0, _ballTypes.Count)];
             ball.Initialize(data);
         }
+
         private RegularBall GetOrCreateBall()
         {
-            if(_ballQueue == null || _ballQueue.Count == 0)
-            {
-                var newBall = Instantiate(_regularBallPrefab, _ballParent);
-                _ballQueue.Enqueue(newBall);
-            }
-            var ball = _ballQueue.Dequeue();
-            ball.gameObject.SetActive(true);
-            return ball;
-        }        
-        private SpecialBall GetOrCreateSpecialBall()
-        {
-            if (_specialsBallQueue == null || _specialsBallQueue.Count == 0)
-            {
-                var newBall = Instantiate(_specialBallPrefab, _ballParent);
-                newBall.gameObject.SetActive(true);
-                return newBall;
-            }
-            var ball = _specialsBallQueue.Dequeue();
-            ball.gameObject.SetActive(true);
-            return ball;
+            return _regularBallPool.Get();
         }
 
+        private SpecialBall GetOrCreateSpecialBall()
+        {
+            return _specialBallPool.Get();
+        }
+
+        /// <summary>
+        /// Deactivates and returns balls to the pool.
+        /// </summary>
         public void DestroyBalls(HashSet<Ball> balls)
         {
             foreach (var ball in balls)
             {
                 ball.gameObject.SetActive(false);
-                if(ball is SpecialBall specialBall)
+
+                if (ball is SpecialBall specialBall)
                 {
-                    _specialsBallQueue.Enqueue(specialBall);
+                    _specialBallPool.Release(specialBall);
                 }
                 else
                 {
-                    _ballQueue.Enqueue((RegularBall)ball);
+                    _regularBallPool.Release((RegularBall)ball);
                 }
             }
         }

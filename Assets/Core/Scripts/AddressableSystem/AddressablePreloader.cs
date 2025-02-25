@@ -3,6 +3,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Networking;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -55,6 +56,8 @@ namespace Core.Addressable
                 }
                 else
                 {
+                    _loadingSlider.value = 1;
+                    _loadingText.text = $"Loading... {(1 * 100):F0}%";
                     OnFinishLoading();
                 }
             }

@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Yellow
   m_EditorClassIdentifier: 
   TypeName: 3
-  Sprite: {fileID: 21300000, guid: 8fcc9bf1f7f618d45b64c5fc1c455b12, type: 3}
+  Sprite: {fileID: 21300000, guid: edf874976a3fa7542b5a66020320a12e, type: 3}
