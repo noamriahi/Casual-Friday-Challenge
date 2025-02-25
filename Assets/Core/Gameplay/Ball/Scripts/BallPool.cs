@@ -65,8 +65,7 @@ namespace Core.Balls
             if(_ballQueue == null || _ballQueue.Count == 0)
             {
                 var newBall = Instantiate(_regularBallPrefab, _ballParent);
-                newBall.gameObject.SetActive(true);
-                return newBall;
+                _ballQueue.Enqueue(newBall);
             }
             var ball = _ballQueue.Dequeue();
             ball.gameObject.SetActive(true);

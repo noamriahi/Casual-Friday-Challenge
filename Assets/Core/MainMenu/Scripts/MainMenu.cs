@@ -19,7 +19,7 @@ public class MainMenu : MonoBehaviour
     }
     void OpenSettings()
     {
-        new OpenPopupCommand("Popups/SettingsPopup").Execute();
+        new OpenPopupCommand(PopupType.Settings).Execute();
     }
     void StartGame()
     {

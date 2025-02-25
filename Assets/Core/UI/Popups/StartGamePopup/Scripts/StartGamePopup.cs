@@ -24,6 +24,7 @@ public class StartGamePopup : Popup
     }
     private async void DelayBeforeDestroy()
     {
+        await UniTask.NextFrame();
         await UniTask.WaitForSeconds(1f);
         ClosePopup();
     }

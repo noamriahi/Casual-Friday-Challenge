@@ -61,7 +61,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     void StartGame()
     {
-        new OpenPopupCommand("Popups/StartGamePopup").Execute();
+        new OpenPopupCommand(PopupType.StartGame).Execute();
 
         GameEvents.OnGameStart?.Invoke();
     }
@@ -70,7 +70,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     void OnGameOver()
     {
-        new OpenPopupCommand("Popups/EndGamePopup").Execute();
+        new OpenPopupCommand(PopupType.EndGame).Execute();
 
     }
     private void OnDestroy()

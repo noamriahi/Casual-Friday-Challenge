@@ -1,20 +1,23 @@
 using Core.Addressable;
+using System;
 using UnityEngine;
 namespace Core.Popups
 {
     /// <summary>
     /// Load asset and then take the popup script to open it using the popupManager.
     /// </summary>
+    public enum PopupType { StartGame, EndGame, Settings }
     public class OpenPopupCommand : BaseCommand
     {
-        private string _addressName;
-        public OpenPopupCommand(string addressName) 
+        private PopupType _popupType;
+        public OpenPopupCommand(PopupType popupType)
         {
-            _addressName = addressName;
+            _popupType = popupType;
         }
         protected override void InternalExecute()
         {
-            new LoadAssetCommand(_addressName)
+            string path = GetPopupPath(_popupType);
+            new LoadAssetCommand(path)
                 .WithLoadCallback(OnLoadAsset)
                 .Execute();
         }
@@ -25,6 +28,16 @@ namespace Core.Popups
             {
                 PopupManager.Instance.OpenPopup(popup);
             }
+        }
+        private string GetPopupPath(PopupType type)
+        {
+            return type switch
+            {
+                PopupType.StartGame => "Popups/StartGamePopup",
+                PopupType.EndGame => "Popups/EndGamePopup",
+                PopupType.Settings => "Popups/SettingsPopup",
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
     }
 }

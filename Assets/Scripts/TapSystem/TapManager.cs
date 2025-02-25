@@ -18,7 +18,7 @@ public class TapManager : Singleton<TapManager>
     void OnGameStart()
     {
         _currentTapAmount = _maxTapAmount;
-        OnTapUpdateEvent?.Invoke(Instance._currentTapAmount);
+        OnTapUpdateEvent?.Invoke(_currentTapAmount);
     }
     public void TapBall()
     {
