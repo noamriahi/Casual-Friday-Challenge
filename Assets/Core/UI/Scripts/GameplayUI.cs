@@ -50,6 +50,7 @@ namespace Core.UI
         {
             if (_notEnoughBalls.activeSelf) return;
             _notEnoughBalls.SetActive(true);
+            _notEnoughBalls.GetComponent<RectTransform>().BounceScaleUI(1f);
             HideNotEnoughBallsAfterDelay().Forget();
         }
         private async UniTask HideNotEnoughBallsAfterDelay()

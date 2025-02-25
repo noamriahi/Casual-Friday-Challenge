@@ -47,7 +47,7 @@ public class ScoreManager : Singleton<ScoreManager>
     }
     public bool HaveWin()
     {
-        return Score > _targetScore;
+        return Score >= _targetScore;
     }
     protected override void OnDestroy()
     {
